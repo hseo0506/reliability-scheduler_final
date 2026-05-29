@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>신뢰성 시험 계획 및 자원 지정 최적화 시스템 v5.4</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Malgun Gothic', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f0f4f8; margin: 0; padding: 15px; color: #333; }
+        
+        .container { background: #ffffff; width: 98%; max-width: 100%; padding: 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(31, 78, 120, 0.08); border-top: 8px solid #0f766e; margin: 0 auto; }
+        
+        .header-section { margin-bottom: 20px; text-align: center; }
+        h1 { color: #0f766e; margin: 0 0 5px 0; font-size: 26px; font-weight: 800; }
+        .subtitle { color: #666; margin: 0; font-size: 13px; }
+        
+        .guide-box { background-color: #f0fdf4; border-left: 4px solid #16a34a; padding: 12px 20px; border-radius: 6px; margin-bottom: 20px; font-size: 13px; line-height: 1.5; color: #166534; }
+        
+        .main-layout { display: grid; grid-template-columns: 400px 1fr; gap: 25px; align-items: start; width: 100%; }
+        
+        .panel { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; width: 100%; }
+        .panel-title { font-size: 15px; font-weight: bold; color: #0f766e; margin-top: 0; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid #cbd5e1; display: flex; justify-content: space-between; }
+        
+        .form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+        label { font-weight: bold; margin-bottom: 6px; color: #334155; font-size: 13px; }
+        select, input[type="date"], input[type="text"] { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; background-color: #fff; color: #334155; outline: none; }
+        select:focus, input:focus { border-color: #0f766e; box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1); }
+        
+        .item-selection-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .btn-toggle-all { padding: 4px 10px; background-color: #475569; color: white; border: none; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .btn-toggle-all:hover { background-color: #334155; }
+
+        .item-select-box { height: 320px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 6px; background: white; padding: 5px; }
+        
+        .group-header { background-color: #f1f5f9; padding: 6px 10px; margin: 8px 0 4px 0; border-radius: 4px; font-size: 12px; font-weight: bold; color: #0f766e; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid #0f766e; }
+        .group-header:first-child { margin-top: 0; }
+        .btn-group-toggle { padding: 2px 6px; background-color: #fff; border: 1px solid #cbd5e1; border-radius: 3px; font-size: 10px; cursor: pointer; color: #475569; }
+        .btn-group-toggle:hover { background-color: #e2e8f0; color: #0f766e; }
+
+        .item-option { display: flex; align-items: flex-start; gap: 8px; padding: 8px; border-bottom: 1px dashed #f1f5f9; cursor: pointer; border-radius: 4px; font-size: 12px; }
+        .item-option:hover { background-color: #f1f5f9; }
+        .item-option input[type="checkbox"] { margin-top: 3px; cursor: pointer; }
+        .item-option .info-text { display: flex; flex-direction: column; gap: 2px; width: 100%; }
+        .item-option .item-name { font-weight: bold; color: #1e293b; }
+        .item-option .item-meta { color: #64748b; font-size: 11px; }
+
+        .btn-generate { width: 100%; padding: 13px; background-color: #0f766e; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; transition: background 0.2s; margin-top: 5px; }
+        .btn-generate:hover { background-color: #115e59; }
+        
+        .priority-list { list-style: none; padding: 0; margin: 0 0 15px 0; }
+        .priority-item { display: flex; align-items: center; justify-content: space-between; background: white; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 8px; font-size: 13px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .priority-item .model-info { display: flex; flex-direction: column; gap: 4px; }
+        .priority-item .model-name { font-weight: bold; color: #0f766e; }
+        .priority-item .ctrl-btns { display: flex; gap: 4px; align-items: center; }
+        .btn-sort { padding: 4px 8px; background: #e2e8f0; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .btn-sort:hover { background: #cbd5e1; }
+        .btn-del { padding: 4px 8px; background: #fee2e2; color: #ef4444; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .btn-del:hover { background: #fca5a5; }
+        
+        /* 오른쪽 결과 대시보드 및 다중 테이블 컨테이너 */
+        .result-section { display: none; width: calc(100% - 425px); }
+        
+        /* [v5.4] 모델별 개별 프레임 박스 */
+        .project-table-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .project-table-card:last-child { margin-bottom: 0; }
+        
+        .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #0f766e; }
+        .result-header h3 { margin: 0; color: #0f766e; font-size: 16px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+        
+        .btn-download-sub { padding: 6px 12px; background-color: #2e7d32; color: white; border: none; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; gap: 4px; }
+        .btn-download-sub:hover { background-color: #1b5e20; }
+        
+        .global-actions { display: flex; justify-content: flex-end; margin-bottom: 15px; }
+        .btn-reset { padding: 8px 14px; background-color: #64748b; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; }
+        .btn-reset:hover { background-color: #475569; }
+        
+        .table-responsive { overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; background-color: #fff; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; min-width: 1000px; } 
+        th, td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; white-space: nowrap; } 
+        th { background-color: #f1f5f9; color: #334155; font-weight: bold; text-align: center; border-bottom: 2px solid #cbd5e1; }
+        
+        tr:hover { background-color: #f8fafc; }
+        .highlight-master { background-color: #fff9db; }
+        .highlight-conflict { background-color: #ffebe6 !important; } 
+        .highlight-same-condition { background-color: #e0f2fe !important; } 
+        
+        .table-select { padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; background-color: #fff; width: 100%; max-width: 200px; }
+
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+        .text-right { text-align: right; }
+        
+        .badge-step { display: inline-block; padding: 3px 6px; background-color: #0f766e; color: white; border-radius: 4px; font-weight: bold; font-size: 11px; }
+        .badge-seq { display: inline-block; padding: 3px 6px; background-color: #f1f5f9; color: #334155; border-radius: 4px; border: 1px solid #cbd5e1; font-size: 11px; }
+        .badge-cond { display: inline-block; padding: 3px 6px; background-color: #f4f4f5; color: #71717a; border-radius: 4px; font-weight: bold; font-size: 11px; border: 1px dashed #d4d4d8; }
+        .badge-ch { display: inline-block; padding: 3px 6px; background-color: #e2f0d9; color: #2e7d32; border-radius: 4px; font-weight: bold; font-size: 11px; }
+        .badge-conflict { display: inline-block; padding: 3px 6px; background-color: #ef4444; color: white; border-radius: 4px; font-weight: bold; font-size: 11px; }
+        .badge-batch { display: inline-block; padding: 3px 6px; background-color: #0284c7; color: white; border-radius: 4px; font-weight: bold; font-size: 11px; }
+        .date-text { color: #0f172a; font-family: monospace; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-section">
+        <h1>⚙️ 신뢰성 시험 계획 수립 및 자원 지정 최적화 시스템 v5.4</h1>
+        <p class="subtitle">UI Selection Based Multi-Project Resource Conflict & Overlap Batching Scheduler</p>
+    </div>
+    
+    <div class="guide-box">
+        <strong>💡 v5.4 모델명/단계별 독립 계획표 출력 기능 반영 안내:</strong><br>
+        • <strong>프로젝트별 전면 분리 스케줄링 완료:</strong> 수립 버튼을 누르면 우측 화면에 각 모델별로 독립된 테이블 카드들이 개별 배치됩니다.<br>
+        • <strong>개별 다운로드 인프라 연동:</strong> 각 계획표 창 우측 상단에 배치된 그린 버튼을 이용해 해당 모델군만의 <u>독립 엑셀 리포트(CSV)</u>를 개별 추출할 수 있습니다.
+    </div>
+    
+    <div class="main-layout">
+        <div class="panel">
+            <div class="panel-title">1. 프로젝트 정보 구성</div>
+            
+            <div class="form-group">
+                <label>1. 대상 모델명 입력</label>
+                <input type="text" id="modelInput" value="CVVD" placeholder="예: CVVD, DCT, NEEV">
+            </div>
+            
+            <div class="form-group">
+                <label>2. 시험 단계 선택 지정</label>
+                <select id="stepSelect">
+                    <option value="정기" selected>정기 시험</option>
+                    <option value="개발">개발 검증</option>
+                    <option value="4M">4M 변경 관리</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>3. 최초 시험 시작 일정 기입</label>
+                <input type="date" id="startDateInput">
+            </div>
+
+            <div class="form-group">
+                <div class="item-selection-header">
+                    <label style="margin-bottom: 0;">4. 투입 시험 항목 다중 지정</label>
+                    <button class="btn-toggle-all" id="btnToggleAll" onclick="toggleAllItems()">☑️ 전체 선택</button>
+                </div>
+                <div class="item-select-box" id="masterItemSelectionContainer">
+                    </div>
+            </div>
+            
+            <button class="btn-generate" onclick="addModelSchedule()">🚀 이 프로젝트 스케줄 누적 수립</button>
+            
+            <div class="panel-title" style="margin-top: 25px;">2. 수립된 모델 우선순위 조정</div>
+            <ul class="priority-list" id="priorityListVisual">
+                </ul>
+        </div>
+        
+        <div class="result-section" id="resultSection">
+            <div class="global-actions">
+                <button class="btn-reset" onclick="resetAllScheduler()">🔄 전체 초기화 및 비우기</button>
+            </div>
+            <div id="dynamicTablesContainer">
+                </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const EQUIPMENT_CAPACITY = {
+        "항온항습 챔버": 4, "항온항습 챔버 1호기": 1, "항온항습 챔버 2호기": 1, "항온항습 챔버 3호기": 1, "항온항습 챔버 4호기": 1,    
+        "진동 시험기": 1, "열충격 시험기": 1, "진동 시험장비": 1, "DDC 복합작동내구": 1, "살수 시험기": 1, "염수분무 시험기": 1,
+        "복합작동 내구시험기": 1, "염수분무시험기": 1, "CVVD 성능 평가 시험기": 1, "줄자": 5, "사내": 999, "외부 기관": 999,
+        "DDC 복합작동 내구시험기": 1
+    };
+
+    const MASTER_RELIABILITY_ITEMS = [
+        {seq: "시퀀스1(내구)", idx: 1, item: "고온 작동시험", hours: 272, device: "항온항습 챔버 1호기", condition: "120C 작동"},
+        {seq: "시퀀스1(내구)", idx: 2, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "시퀀스1(내구)", idx: 3, item: "랜덤 진동시험", hours: 120, device: "진동 시험기", condition: "2.1Grms"},
+        {seq: "시퀀스1(내구)", idx: 4, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "시퀀스1(내구)", idx: 5, item: "충격 시험", hours: 24, device: "진동 시험기", condition: "20G 충격"},
+        {seq: "시퀀스1(내구)", idx: 6, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
+        
+        {seq: "시퀀스2-1(환경)", idx: 1, item: "열충격 시험", hours: 144, device: "열충격 시험기", condition: "-40C~140C"},
+        {seq: "시퀀스2-1(환경)", idx: 2, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "시퀀스2-1(환경)", idx: 3, item: "온도싸이클 시험", hours: 158, device: "항온항습 챔버 2호기", condition: "-40C~125C"},
+        {seq: "시퀀스2-1(환경)", idx: 4, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "시퀀스2-1(환경)", idx: 5, item: "정상 습도 시험", hours: 240, device: "항온항습 챔버 2호기", condition: "65C/90%"},
+        {seq: "시퀀스2-1(환경)", idx: 6, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "시퀀스2-1(환경)", idx: 7, item: "저온동작 시험", hours: 25, device: "항온항습 챔버 2호기", condition: "-40C 작동"},
+        {seq: "시퀀스2-1(환경)", idx: 8, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
+        
+        {seq: "시퀀스2-2(환경)", idx: 1, item: "열충격 시험", hours: 144, device: "열충격 시험기", condition: "-40C~140C"},
+        {seq: "시퀀스2-2(환경)", idx: 2, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "시퀀스2-2(환경)", idx: 3, item: "온도싸이클 시험", hours: 158, device: "항온항습 챔버 2호기", condition: "-40C~125C"},
+        {seq: "시퀀스2-2(환경)", idx: 4, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "시퀀스2-2(환경)", idx: 5, item: "습도 변동 시험", hours: 240, device: "항온항습 챔버 2호기", condition: "-10C~65C, 93%(65C)"},
+        {seq: "시퀀스2-2(환경)", idx: 6, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "시퀀스2-2(환경)", idx: 7, item: "고압살수 시험", hours: 25, device: "살수 시험기", condition: "IPX9K"},
+        {seq: "시퀀스2-2(환경)", idx: 8, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "시퀀스2-2(환경)", idx: 9, item: "비산방수 시험", hours: 12, device: "외부 기관", condition: "IPX4"},
+        {seq: "시퀀스2-2(환경)", idx: 10, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "시퀀스2-2(환경)", idx: 11, item: "냉수 충격 시험", hours: 11, device: "살수 시험기", condition: "0C 내수"},
+        {seq: "시퀀스2-2(환경)", idx: 12, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
+        
+        {seq: "시퀀스2-3(환경)", idx: 1, item: "열충격 시험", hours: 144, device: "열충격 시험기", condition: "-40C~140C"},
+        {seq: "시퀀스2-3(환경)", idx: 2, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "시퀀스2-3(환경)", idx: 3, item: "온도싸이클 시험", hours: 158, device: "항온항습 챔버 2호기", condition: "-40C~125C"},
+        {seq: "시퀀스2-3(환경)", idx: 4, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "시퀀스2-3(환경)", idx: 5, item: "염수분무 시험", hours: 168, device: "염수분무 시험기", condition: "온도 35C, 염분 5%, pH6.5~7.2"},
+        {seq: "시퀀스2-3(환경)", idx: 6, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "시퀀스2-3(환경)", idx: 7, item: "먼지 시험", hours: 24, device: "외부 기관", condition: "IPX6K"},
+        {seq: "시퀀스2-3(환경)", idx: 8, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
+        
+        {seq: "개별 시험", idx: 1, item: "고온고습 시험", hours: 1028, device: "항온항습 챔버 2호기", condition: "85C/85%"},
+        {seq: "개별 시험", idx: 2, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "개별 시험", idx: 3, item: "낙하 시험", hours: 24, device: "줄자", condition: "콘크리트 바닥"},
+        {seq: "개별 시험", idx: 4, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "개별 시험", idx: 5, item: "내화학 시험", hours: 720, device: "항온항습 챔버 2호기", condition: "25C~100C"},
+        {seq: "개별 시험", idx: 6, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "개별 시험", idx: 7, item: "복합작동 내구 시험", hours: 1386, device: "DDC 복합작동 내구시험기", condition: "-40~140"},
+        {seq: "개별 시험", idx: 8, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "개별 시험", idx: 9, item: "사인진동 시험", hours: 300, device: "진동 시험기", condition: "20Hz~2000Hz"},
+        {seq: "개별 시험", idx: 10, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"}
+    ];
+
+    let USER_RELIABILITY_DB = {};
+    let addedModelsOrder = []; 
+    let globalCalculatedData = [];
+    let uniqueIdCounter = 0;
+
+    window.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('startDateInput').value = new Date().toISOString().substring(0, 10);
+        buildSelectionCheckboxUI();
+    });
+
+    function buildSelectionCheckboxUI() {
+        const container = document.getElementById('masterItemSelectionContainer');
+        if(!container) return;
+        container.innerHTML = '';
+
+        let orderedCategories = [];
+        MASTER_RELIABILITY_ITEMS.forEach(item => {
+            if(!orderedCategories.includes(item.seq)) {
+                orderedCategories.push(item.seq);
+            }
+        });
+
+        orderedCategories.forEach(categoryName => {
+            let headerDiv = document.createElement('div');
+            headerDiv.className = 'group-header';
+            headerDiv.innerHTML = `
+                <span>📁 ${categoryName} 전체</span>
+                <button class="btn-group-toggle" data-seq="${categoryName}" onclick="toggleGroupItems('${categoryName}', this, event)">선택</button>
+            `;
+            container.appendChild(headerDiv);
+
+            MASTER_RELIABILITY_ITEMS.forEach((item, index) => {
+                if(item.seq === categoryName) {
+                    let optionDiv = document.createElement('div');
+                    optionDiv.className = 'item-option';
+                    optionDiv.setAttribute('data-group-seq', categoryName);
+                    optionDiv.innerHTML = `
+                        <input type="checkbox" id="chk_${index}" value="${index}" data-group="${categoryName}" onchange="syncToggleButtonText()">
+                        <div class="info-text" onclick="triggerCheckboxClick(${index})">
+                            <span class="item-name">[${item.idx}] ${item.item}</span>
+                            <span class="item-meta">⏳ ${item.hours}h | ⚙️ ${item.device} | 🧬 조건: ${item.condition}</span>
+                        </div>
+                    `;
+                    container.appendChild(optionDiv);
+                }
+            });
+        });
+    }
+
+    function triggerCheckboxClick(index) {
+        const chk = document.getElementById(`chk_${index}`);
+        if(chk) {
+            chk.checked = !chk.checked;
+            syncToggleButtonText();
+        }
+    }
+
+    function toggleGroupItems(seqName, btnElement, event) {
+        event.preventDefault(); 
+        const groupCheckboxes = document.querySelectorAll(`#masterItemSelectionContainer input[type="checkbox"][data-group="${seqName}"]`);
+        
+        let targetState = false;
+        for (let i = 0; i < groupCheckboxes.length; i++) {
+            if (!groupCheckboxes[i].checked) {
+                targetState = true;
+                break;
+            }
+        }
+
+        groupCheckboxes.forEach(cb => cb.checked = targetState);
+        btnElement.innerText = targetState ? "해제" : "선택";
+        syncToggleButtonText();
+    }
+
+    function toggleAllItems() {
+        const checkboxes = document.querySelectorAll('#masterItemSelectionContainer input[type="checkbox"]');
+        
+        let targetState = false;
+        for (let i = 0; i < checkboxes.length; i++) {
+            if (!checkboxes[i].checked) {
+                targetState = true;
+                break;
+            }
+        }
+
+        checkboxes.forEach(cb => cb.checked = targetState);
+        syncToggleButtonText();
+    }
+
+    function syncToggleButtonText() {
+        const checkboxes = document.querySelectorAll('#masterItemSelectionContainer input[type="checkbox"]');
+        const mainBtn = document.getElementById('btnToggleAll');
+        if(!mainBtn) return;
+        
+        let allChecked = true;
+        for (let i = 0; i < checkboxes.length; i++) {
+            if (!checkboxes[i].checked) {
+                allChecked = false;
+                break;
+            }
+        }
+        mainBtn.innerText = allChecked ? "❌ 전체 해제" : "☑️ 전체 선택";
+
+        const groupHeaders = document.querySelectorAll('.btn-group-toggle');
+        groupHeaders.forEach(btn => {
+            const seq = btn.getAttribute('data-seq');
+            const gCheckboxes = document.querySelectorAll(`#masterItemSelectionContainer input[type="checkbox"][data-group="${seq}"]`);
+            
+            let gAllChecked = true;
+            for(let j=0; j<gCheckboxes.length; j++) {
+                if(!gCheckboxes[j].checked) {
+                    gAllChecked = false;
+                    break;
+                }
+            }
+            btn.innerText = gAllChecked ? "해제" : "선택";
+        });
+    }
+
+    function addModelSchedule() {
+        const pureModelName = document.getElementById('modelInput').value.trim();
+        const step = document.getElementById('stepSelect').value;
+        const startDate = document.getElementById('startDateInput').value;
+
+        if(!pureModelName || !startDate) {
+            alert("모델명과 시험 시작 일정을 정확히 세팅해 주세요.");
+            return;
+        }
+
+        const uniqueProjectKey = `${pureModelName} [${step}]`;
+
+        if(addedModelsOrder.includes(uniqueProjectKey)) {
+            alert(`[안내] 이미 대기열에 '${uniqueProjectKey}' 스케줄이 존재합니다.`);
+            return;
+        }
+
+        let selectedTasks = [];
+        MASTER_RELIABILITY_ITEMS.forEach((item, index) => {
+            const chk = document.getElementById(`chk_${index}`);
+            if(chk && chk.checked) {
+                selectedTasks.push(JSON.parse(JSON.stringify(item)));
+            }
+        });
+
+        if(selectedTasks.length === 0) {
+            alert("시험 항목 체크박스를 최소 하나 이상 선택해 주세요.");
+            return;
+        }
+
+        USER_RELIABILITY_DB[uniqueProjectKey] = {
+            pureModelName: pureModelName,
+            step: step,
+            startDate: startDate,
+            tasks: selectedTasks
+        };
+
+        addedModelsOrder.push(uniqueProjectKey);
+        updatePriorityUI();
+        recalculateEngine();
+    }
+
+    function recalculateEngine() {
+        let tempGlobalData = [];
+        let modelSequenceEndTimes = {}; 
+
+        addedModelsOrder.forEach(projectKey => {
+            const config = USER_RELIABILITY_DB[projectKey];
+            const baseStart = new Date(config.startDate + "T00:00:00");
+            const sourceList = config.tasks;
+
+            if (!modelSequenceEndTimes[projectKey]) {
+                modelSequenceEndTimes[projectKey] = {};
+            }
+
+            sourceList.forEach(task => {
+                const seqKey = task.seq;
+                if (!modelSequenceEndTimes[projectKey][seqKey]) {
+                    modelSequenceEndTimes[projectKey][seqKey] = new Date(baseStart.getTime());
+                }
+
+                let currentStart = new Date(modelSequenceEndTimes[projectKey][seqKey].getTime());
+                let daysNeeded = Math.ceil(task.hours / 24);
+                let currentEnd = new Date(currentStart.getTime());
+                currentEnd.setDate(currentEnd.getDate() + daysNeeded);
+
+                modelSequenceEndTimes[projectKey][seqKey] = new Date(currentEnd.getTime());
+
+                tempGlobalData.push({
+                    id: uniqueIdCounter++,
+                    projectKey: projectKey,
+                    modelName: config.pureModelName,
+                    step: config.step,
+                    seq: task.seq,
+                    idx: task.idx,
+                    item: task.item,
+                    device: task.device,
+                    condition: task.condition,
+                    hours: task.hours,
+                    start: currentStart,
+                    end: currentEnd,
+                    isConflict: false,
+                    isBatched: false 
+                });
+            });
+        });
+
+        globalCalculatedData = tempGlobalData;
+        validateResourceConflicts();
+        renderTableOutput();
+    }
+
+    function validateResourceConflicts() {
+        globalCalculatedData.forEach(r => {
+            r.isConflict = false;
+            r.isBatched = false;
+        });
+
+        for (let i = 0; i < globalCalculatedData.length; i++) {
+            let target = globalCalculatedData[i];
+            if (target.condition === "-" || target.condition === "상온 상습") continue;
+
+            let targetStartStr = formatDate(target.start);
+            let targetEndStr = formatDate(target.end);
+
+            for (let j = 0; j < globalCalculatedData.length; j++) {
+                if (i === j) continue;
+                let compare = globalCalculatedData[j];
+
+                if (target.device === compare.device && target.condition.trim() === compare.condition.trim()) {
+                    let compareStartStr = formatDate(compare.start);
+                    let compareEndStr = formatDate(compare.end);
+
+                    let hasOverlap = targetStartStr < compareEndStr && targetEndStr > compareStartStr;
+                    if (hasOverlap) {
+                        target.isBatched = true;
+                        compare.isBatched = true;
+                    }
+                }
+            }
+        }
+
+        for (let i = 0; i < globalCalculatedData.length; i++) {
+            let target = globalCalculatedData[i];
+            let maxCapacity = EQUIPMENT_CAPACITY[target.device] || 1;
+            
+            if (maxCapacity >= 900) continue; 
+
+            let simultaneousUseCount = 1;
+            let loggedConditionsInPeriod = [target.condition.trim()];
+
+            let targetStartStr = formatDate(target.start);
+            let targetEndStr = formatDate(target.end);
+
+            for (let j = 0; j < globalCalculatedData.length; j++) {
+                if (i === j) continue;
+                let compare = globalCalculatedData[j];
+
+                if (target.device === compare.device) {
+                    let compareStartStr = formatDate(compare.start);
+                    let compareEndStr = formatDate(compare.end);
+
+                    let hasOverlap = targetStartStr < compareStartStr && targetEndStr > compareStartStr;
+                    if (hasOverlap) {
+                        const compCond = compare.condition.trim();
+                        
+                        if (target.condition.trim() === compCond) {
+                            continue;
+                        }
+                        
+                        if (!loggedConditionsInPeriod.includes(compCond)) {
+                            loggedConditionsInPeriod.push(compCond);
+                            simultaneousUseCount++;
+                        }
+                    }
+                }
+            }
+
+            if (simultaneousUseCount > maxCapacity) {
+                globalCalculatedData.forEach(row => {
+                    let rStartStr = formatDate(row.start);
+                    let rEndStr = formatDate(row.end);
+                    if(row.device === target.device && rStartStr < targetEndStr && rEndStr > targetStartStr && row.condition.trim() !== target.condition.trim()) {
+                        row.isConflict = true;
+                    }
+                });
+            }
+        }
+        
+        globalCalculatedData.forEach(r => {
+            if (r.isBatched) r.isConflict = false;
+        });
+    }
+
+    function changePriority(index, direction) {
+        let targetIndex = index + direction;
+        if (targetIndex < 0 || targetIndex >= addedModelsOrder.length) return;
+
+        let temp = addedModelsOrder[index];
+        addedModelsOrder[index] = addedModelsOrder[targetIndex];
+        addedModelsOrder[targetIndex] = temp;
+
+        updatePriorityUI();
+        recalculateEngine();
+    }
+
+    function deleteModel(projectKey) {
+        if(confirm(`[${projectKey}] 프로젝트 일정을 전체 삭제하시겠습니까?`)) {
+            addedModelsOrder = addedModelsOrder.filter(m => m !== projectKey);
+            delete USER_RELIABILITY_DB[projectKey];
+            updatePriorityUI();
+            recalculateEngine();
+        }
+    }
+
+    function updatePriorityUI() {
+        const container = document.getElementById('priorityListVisual');
+        if(!container) return;
+        container.innerHTML = '';
+
+        if(addedModelsOrder.length === 0) {
+            container.innerHTML = `<li style="font-size:12px; color:#94a3b8; text-align:center; padding:10px;">수립된 프로젝트 스케줄이 없습니다.</li>`;
+            return;
+        }
+
+        addedModelsOrder.forEach((projectKey, index) => {
+            const dbRef = USER_RELIABILITY_DB[projectKey];
+            let li = document.createElement('li');
+            li.className = 'priority-item';
+            li.innerHTML = `
+                <div class="model-info">
+                    <span class="model-name">순위 ${index + 1}. ${dbRef.pureModelName} [${dbRef.step}]</span>
+                    <span style="font-size:11px; color:#64748b;">시작일: ${dbRef.startDate} (${dbRef.tasks.length}개 항목 수립)</span>
+                </div>
+                <div class="ctrl-btns">
+                    <button class="btn-sort" onclick="changePriority(${index}, -1)">▲ 위로</button>
+                    <button class="btn-sort" onclick="changePriority(${index}, 1)">▼ 아래로</button>
+                    <button class="btn-del" onclick="deleteModel('${projectKey}')">삭제</button>
+                </div>
+            `;
+            container.appendChild(li);
+        });
+    }
+
+    function updateTableDeviceOverride(id, selectedDevice) {
+        const targetRow = globalCalculatedData.find(row => row.id === parseInt(id));
+        if (targetRow) {
+            const dbList = USER_RELIABILITY_DB[targetRow.projectKey].tasks || [];
+            const dbTask = dbList.find(t => t.seq === targetRow.seq && t.idx === targetRow.idx);
+            if (dbTask) {
+                dbTask.device = selectedDevice;
+            }
+            recalculateEngine();
+        }
+    }
+
+    // =========================================================================
+    // [v5.4 대전환] 단일 테이블 렌더링에서 -> 모델별 그룹 분리형 멀티 테이블 카드로 개편
+    // =========================================================================
+    function renderTableOutput() {
+        const mainContainer = document.getElementById('dynamicTablesContainer');
+        if(!mainContainer) return;
+        mainContainer.innerHTML = '';
+        
+        const deviceOptions = Object.keys(EQUIPMENT_CAPACITY);
+
+        if(addedModelsOrder.length === 0) {
+            document.getElementById('resultSection').style.display = 'none';
+            return;
+        }
+
+        // 우선순위 큐(적재 순서) 마스터 베이스 루프
+        addedModelsOrder.forEach(projectKey => {
+            const projectData = USER_RELIABILITY_DB[projectKey];
+            const projectRows = globalCalculatedData.filter(row => row.projectKey === projectKey);
+            
+            if(projectRows.length === 0) return;
+
+            // 1. 모델 개별 전용 카드(Card Container) 동적 조립
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'project-table-card';
+            
+            // 2. 카드 헤더 바 (모델 전용 개별 엑셀 다운로드 기능 내장)
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'result-header';
+            headerDiv.innerHTML = `
+                <h3>📋 ${projectData.pureModelName} [${projectData.step}] 단계 시험 스케줄 계획표</h3>
+                <button class="btn-download-sub" onclick="downloadSingleProjectCSV('${projectKey}')">📥 이 계획표 전용 엑셀 내보내기</button>
+            `;
+            cardDiv.appendChild(headerDiv);
+
+            // 3. 모델 전용 반응형 전용 스펙 테이블 조립
+            const tableRespDiv = document.createElement('div');
+            tableRespDiv.className = 'table-responsive';
+            
+            const tableHtml = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 130px;">구분/시퀀스</th>
+                            <th style="width: 50px;">순번</th>
+                            <th style="width: 200px;">시험 항목</th>
+                            <th style="width: 180px;">시험 조건</th>
+                            <th style="width: 220px;">지정/투입 설비명 (변경 가능)</th>
+                            <th style="width: 70px;">소요(h)</th>
+                            <th style="width: 110px;">시작 일자</th>
+                            <th style="width: 110px;">완료 일자</th>
+                            <th style="width: 140px;">할당 상태 체크</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            `;
+            tableRespDiv.innerHTML = tableHtml;
+            
+            const tbody = tableRespDiv.querySelector('tbody');
+            
+            // 4. 수집된 소속 행 렌더 버퍼 장입 가동
+            projectRows.forEach(row => {
+                const tr = document.createElement('tr');
+                
+                if (row.isConflict) {
+                    tr.className = "highlight-conflict";
+                } else if (row.isBatched) {
+                    tr.className = "highlight-same-condition";
+                } else if (row.device.includes("호기")) {
+                    tr.className = "highlight-master";
+                }
+
+                let selectHtml = `<select class="table-select" onchange="updateTableDeviceOverride('${row.id}', this.value)">`;
+                deviceOptions.forEach(dev => {
+                    const selected = (dev === row.device) ? 'selected' : '';
+                    selectHtml += `<option value="${dev}" ${selected}>${dev}</option>`;
+                });
+                selectHtml += `</select>`;
+
+                let statusBadgeHtml = '';
+                if (row.isConflict) {
+                    statusBadgeHtml = `<span class="badge-conflict">⚠️ 자원 부족(충돌)</span>`;
+                } else if (row.isBatched) {
+                    statusBadgeHtml = `<span class="badge-batch">🔗 동일조건 동시투입</span>`;
+                } else {
+                    let capacityLimit = EQUIPMENT_CAPACITY[row.device] || 1;
+                    let statusText = capacityLimit > 50 ? "제한없음" : "정상할당 (1/" + capacityLimit + ")";
+                    statusBadgeHtml = `<span class="badge-ch">${statusText}</span>`;
+                }
+
+                tr.innerHTML = `
+                    <td class="text-center"><span class="badge-seq">${row.seq}</span></td>
+                    <td class="text-center">${row.idx}</td>
+                    <td class="text-left" style="font-weight: bold;">${row.item}</td>
+                    <td class="text-center"><span class="badge-cond">${row.condition}</span></td>
+                    <td class="text-center">${selectHtml}</td>
+                    <td class="text-right">${row.hours} h</td>
+                    <td class="text-center date-text">${formatDate(row.start)}</td>
+                    <td class="text-center date-text">${formatDate(row.end)}</td>
+                    <td class="text-center">${statusBadgeHtml}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            cardDiv.appendChild(tableRespDiv);
+            mainContainer.appendChild(cardDiv);
+        });
+
+        document.getElementById('resultSection').style.display = 'block';
+    }
+
+    function formatDate(date) {
+        let yyyy = date.getFullYear();
+        let mm = String(date.getMonth() + 1).padStart(2, '0');
+        let dd = String(date.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function resetAllScheduler() {
+        if(confirm("전체 프로젝트 대기열과 수립된 분리 계획표들을 공백 리셋하시겠습니까?")) {
+            globalCalculatedData = [];
+            addedModelsOrder = [];
+            USER_RELIABILITY_DB = {};
+            updatePriorityUI();
+            renderTableOutput();
+            const checkboxes = document.querySelectorAll('#masterItemSelectionContainer input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = false);
+            syncToggleButtonText();
+        }
+    }
+
+    // [New 핵심 기능]: 지정 모델 단독 엑셀 리포트 추출 함수
+    function downloadSingleProjectCSV(projectKey) {
+        const projectData = USER_RELIABILITY_DB[projectKey];
+        const projectRows = globalCalculatedData.filter(row => row.projectKey === projectKey);
+        
+        if (projectRows.length === 0) return;
+
+        let csvContent = "\uFEFF"; 
+        csvContent += `프로젝트, ${projectData.pureModelName} [${projectData.step}] 단계 시험 계획표\n`;
+        csvContent += "구분/시퀀스,순번,시험 항목,시험 조건,지정/투입 설비명,소요(h),시작 일자,완료 일자,할당 상태\n";
+        
+        projectRows.forEach(row => {
+            let statusText = row.isConflict ? "자원 부족(충돌)" : (row.isBatched ? "동일조건 동시투입" : "정상할당");
+            csvContent += `"${row.seq}","${row.idx}","${row.item}","${row.condition}","${row.device}","${row.hours}","${formatDate(row.start)}","${formatDate(row.end)}","${statusText}"\n`;
+        });
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `Reliability_Plan_${projectData.pureModelName}_${projectData.step}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+
+</body>
+</html>
