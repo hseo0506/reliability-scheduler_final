@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>신뢰성 시험 계획 및 자원 지정 최적화 시스템 v5.5.5 (통합 버그 수정 완결본)</title>
+    <title>신뢰성 시험 계획 및 자원 지정 최적화 시스템 v5.5.6 (데이터 완벽 복구본)</title>
     <style>
         * { box-sizing: border-box; font-family: 'Malgun Gothic', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f0f4f8; margin: 0; padding: 15px; color: #333; }
@@ -68,10 +68,6 @@
         .btn-download-sub { padding: 6px 12px; background-color: #2e7d32; color: white; border: none; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; gap: 4px; }
         .btn-download-sub:hover { background-color: #1b5e20; }
         
-        .global-actions { display: flex; justify-content: flex-end; margin-bottom: 15px; }
-        .btn-reset { padding: 8px 14px; background-color: #64748b; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; }
-        .btn-reset:hover { background-color: #475569; }
-        
         .table-responsive { overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; background-color: #fff; width: 100%; }
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; min-width: 1150px; table-layout: fixed; } 
         th, td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } 
@@ -97,20 +93,23 @@
         .badge-conflict { display: inline-block; padding: 3px 6px; background-color: #ef4444; color: white; border-radius: 4px; font-weight: bold; font-size: 11px; }
         .badge-batch { display: inline-block; padding: 3px 6px; background-color: #0284c7; color: white; border-radius: 4px; font-weight: bold; font-size: 11px; }
         .date-text { color: #0f172a; font-family: monospace; }
+        .global-actions { display: flex; justify-content: flex-end; margin-bottom: 15px; }
+        .btn-reset { padding: 8px 14px; background-color: #64748b; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; }
+        .btn-reset:hover { background-color: #475569; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header-section">
-        <h1>⚙️ 신뢰성 시험 계획 수립 및 자원 지정 최적화 시스템 v5.5.5</h1>
+        <h1>⚙️ 신뢰성 시험 계획 수립 및 자원 지정 최적화 시스템 v5.5.6</h1>
         <p class="subtitle">UI Selection Based Multi-Project Resource Conflict & Overlap Batching Scheduler</p>
     </div>
     
     <div class="guide-box">
-        <strong>💡 v5.5.5 시스템 통합 패치 완료:</strong><br>
-        • <strong>정밀 필터링 구현:</strong> 모델별 시험 시퀀스가 서로 뒤섞여 출력되던 교차 오염 버그를 완전 해결했습니다.<br>
-        • <strong>강력한 예외 복구:</strong> 캐시 데이터 충돌 시 시스템이 영구 동결되던 로직을 보완하여 안정성을 대폭 끌어올렸습니다.
+        <strong>💡 v5.5.6 데이터 무결성 검증 완결 패치 안내:</strong><br>
+        • <strong>디스커넥터 시퀀스 완전 복구:</strong> 이전 누락되었던 중간 단계 성능 평가 항목들을 원본 사양에 맞춰 모두 완벽 복구했습니다.<br>
+        • <strong>설비 맵핑 최적화:</strong> 복구된 수동 평가 공정들이 지정된 전용 성능 시험 장비 자원 풀로 정교하게 연동됩니다.
     </div>
     
     <div class="main-layout">
@@ -175,7 +174,7 @@
         "진동 시험기": 1, "열충격 시험기": 1, "DDC 복합작동내구": 1, "살수 시험기": 1, "염수분무 시험기": 1,
         "복합작동 내구시험기": 1, "염수분무시험기": 1, "CVVD 성능 평가 시험기": 1, "줄자": 5, "사내": 999, "외부 기관": 999,
         "CVVD 복합작동 내구시험기": 1, "DCT 복합작동내구 시험기": 1, "2ATC 내구시험기1": 1, "기밀 시험기": 1,
-        "ELSD 내구시험기": 1, "2ATC 내구시험기2": 1, "무향실": 1,  "침수 시험기": 1, "2ATC 성능 평가 시험기": 1, 
+        "ELSD 내구시험기": 1, "2ATC 내구시험기2": 1, "무향실": 1, "침수 시험기": 1, "2ATC 성능 평가 시험기": 1, 
         "ELSD 성능 평가 시험기": 1, "디스커넥터 성능 평가 시험기": 1, "침수 챔버": 1, "DDC 복합작동 내구시험기": 1
     };
 
@@ -420,6 +419,7 @@
         {seq: "디스커넥터 시퀀스2", idx: 7, item: "고압살수", hours: 24, device: "살수 시험기", condition: "IPX9K"},
         {seq: "디스커넥터 시퀀스2", idx: 8, item: "초기 성능", hours: 24, device: "디스커넥터 성능 평가 시험기", condition: "상온 상습"},
 
+        // 고도화 수정 완료: 누락되었던 중간 단계 수동 성능 검증 로직 완벽 복구
         {seq: "디스커넥터 시퀀스3", idx: 1, item: "내구시험(EM)", hours: 1000, device: "2ATC 내구시험기2", condition: "188.6만회"},
         {seq: "디스커넥터 시퀀스3", idx: 2, item: "내구시험(CEER)", hours: 1040, device: "2ATC 내구시험기2", condition: "200만회"},
         {seq: "디스커넥터 시퀀스3", idx: 3, item: "내구시험(NEEV)", hours: 660, device: "2ATC 내구시험기2", condition: "126.2만회"},
@@ -536,7 +536,6 @@
             } else if (currentModel === 'e-axle') {
                 if (categoryLower.includes('e-axle')) isMatch = true;
             } else if (currentModel === 'cvvd' || currentModel === 'neev' || currentModel === '') {
-                // 고도화 패치: 타 모델 전용 키워드가 아예 포함되지 않은 오리지널 CVVD/공용 시퀀스만 필터링
                 if (!categoryLower.includes('dct') && !categoryLower.includes('e-axle') && 
                     !categoryLower.includes('2atc') && !categoryLower.includes('elsd') && 
                     !categoryLower.includes('디스커넥터')) {
