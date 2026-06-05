@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>신뢰성 시험 계획 및 자원 지정 최적화 시스템 v5.4</title>
+    <title>신뢰성 시험 계획 및 자원 지정 최적화 시스템 v5.5.5 (통합 버그 수정 완결본)</title>
     <style>
         * { box-sizing: border-box; font-family: 'Malgun Gothic', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f0f4f8; margin: 0; padding: 15px; color: #333; }
@@ -57,9 +57,9 @@
         .btn-del { padding: 4px 8px; background: #fee2e2; color: #ef4444; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
         .btn-del:hover { background: #fca5a5; }
         
-        .result-section { display: none; width: calc(100% - 425px); }
+        .result-section { display: none; min-width: 0; width: 100%; }
         
-        .project-table-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .project-table-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); width: 100%; }
         .project-table-card:last-child { margin-bottom: 0; }
         
         .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #0f766e; }
@@ -72,9 +72,9 @@
         .btn-reset { padding: 8px 14px; background-color: #64748b; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; }
         .btn-reset:hover { background-color: #475569; }
         
-        .table-responsive { overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; background-color: #fff; }
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; min-width: 1000px; } 
-        th, td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; white-space: nowrap; } 
+        .table-responsive { overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; background-color: #fff; width: 100%; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; min-width: 1150px; table-layout: fixed; } 
+        th, td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } 
         th { background-color: #f1f5f9; color: #334155; font-weight: bold; text-align: center; border-bottom: 2px solid #cbd5e1; }
         
         tr:hover { background-color: #f8fafc; }
@@ -82,7 +82,9 @@
         .highlight-conflict { background-color: #ffebe6 !important; } 
         .highlight-same-condition { background-color: #e0f2fe !important; } 
         
-        .table-select { padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; background-color: #fff; width: 100%; max-width: 200px; }
+        .table-select, .table-date-input { padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; background-color: #fff; width: 100%; outline: none; }
+        .table-date-input { font-family: monospace; color: #ef4444; font-weight: bold; height: 26px; border: 1px solid #fca5a5; background-color: #fff5f5; }
+        .table-select:focus, .table-date-input:focus { border-color: #ef4444; }
 
         .text-center { text-align: center; }
         .text-left { text-align: left; }
@@ -101,14 +103,14 @@
 
 <div class="container">
     <div class="header-section">
-        <h1>⚙️ 신뢰성 시험 계획 수립 및 자원 지정 최적화 시스템 v5.4</h1>
+        <h1>⚙️ 신뢰성 시험 계획 수립 및 자원 지정 최적화 시스템 v5.5.5</h1>
         <p class="subtitle">UI Selection Based Multi-Project Resource Conflict & Overlap Batching Scheduler</p>
     </div>
     
     <div class="guide-box">
-        <strong>💡 v5.4.3 원터치 충돌 회피 기능 패치 안내:</strong><br>
-        • <strong>⚡ 충돌 자동 연기 기능 탑재:</strong> 계획표 우측 상단에 호박색 버튼이 추가되었습니다. 클릭 시 선행 프로젝트의 설비 종료일을 추적해 시작일을 자동 연기합니다.<br>
-        • <strong>독립 시험 유지 보장:</strong> 동일 프로젝트 내부의 중복은 정상으로 처리하되, 타 프로젝트 간 전용 설비가 오버랩되는 경우에만 칼같이 경고등을 켭니다.
+        <strong>💡 v5.5.5 시스템 통합 패치 완료:</strong><br>
+        • <strong>정밀 필터링 구현:</strong> 모델별 시험 시퀀스가 서로 뒤섞여 출력되던 교차 오염 버그를 완전 해결했습니다.<br>
+        • <strong>강력한 예외 복구:</strong> 캐시 데이터 충돌 시 시스템이 영구 동결되던 로직을 보완하여 안정성을 대폭 끌어올렸습니다.
     </div>
     
     <div class="main-layout">
@@ -116,8 +118,15 @@
             <div class="panel-title">1. 프로젝트 정보 구성</div>
             
             <div class="form-group">
-                <label>1. 대상 모델명 입력</label>
-                <input type="text" id="modelInput" value="CVVD" placeholder="예: CVVD, DCT, NEEV">
+                <label>1. 대상 모델명 선택</label>
+                <select id="modelInput">
+                    <option value="CVVD" selected>CVVD</option>
+                    <option value="DCT">DCT</option>
+                    <option value="2ATC">2ATC</option>
+                    <option value="ELSD">ELSD</option>
+                    <option value="디스커넥터">디스커넥터</option>
+                    <option value="e-Axle">e-Axle</option>
+                </select>
             </div>
             
             <div class="form-group">
@@ -163,64 +172,291 @@
 <script>
     const EQUIPMENT_CAPACITY = {
         "항온항습 챔버": 4, "항온항습 챔버 1호기": 1, "항온항습 챔버 2호기": 1, "항온항습 챔버 3호기": 1, "항온항습 챔버 4호기": 1,    
-        "진동 시험기": 1, "열충격 시험기": 1, "진동 시험장비": 1, "DDC 복합작동내구": 1, "살수 시험기": 1, "염수분무 시험기": 1,
+        "진동 시험기": 1, "열충격 시험기": 1, "DDC 복합작동내구": 1, "살수 시험기": 1, "염수분무 시험기": 1,
         "복합작동 내구시험기": 1, "염수분무시험기": 1, "CVVD 성능 평가 시험기": 1, "줄자": 5, "사내": 999, "외부 기관": 999,
-        "DDC 복합작동 내구시험기": 1
+        "CVVD 복합작동 내구시험기": 1, "DCT 복합작동내구 시험기": 1, "2ATC 내구시험기1": 1, "기밀 시험기": 1,
+        "ELSD 내구시험기": 1, "2ATC 내구시험기2": 1, "무향실": 1,  "침수 시험기": 1, "2ATC 성능 평가 시험기": 1, 
+        "ELSD 성능 평가 시험기": 1, "디스커넥터 성능 평가 시험기": 1, "침수 챔버": 1, "DDC 복합작동 내구시험기": 1
     };
 
     const MASTER_RELIABILITY_ITEMS = [
-        {seq: "시퀀스1(내구)", idx: 1, item: "고온 작동시험", hours: 272, device: "항온항습 챔버 1호기", condition: "120C 작동"},
+        {seq: "시퀀스1(내구)", idx: 1, item: "고온 작동시험", hours: 272, device: "항온항습 챔버 1호기", condition: "120°C 작동"},
         {seq: "시퀀스1(내구)", idx: 2, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
         {seq: "시퀀스1(내구)", idx: 3, item: "랜덤 진동시험", hours: 120, device: "진동 시험기", condition: "2.1Grms"},
         {seq: "시퀀스1(내구)", idx: 4, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
         {seq: "시퀀스1(내구)", idx: 5, item: "충격 시험", hours: 24, device: "진동 시험기", condition: "20G 충격"},
         {seq: "시퀀스1(내구)", idx: 6, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
         
-        {seq: "시퀀스2-1(환경)", idx: 1, item: "열충격 시험", hours: 144, device: "열충격 시험기", condition: "-40C~140C"},
+        {seq: "시퀀스2-1(환경)", idx: 1, item: "열충격 시험", hours: 144, device: "열충격 시험기", condition: "-40°C~140°C"},
         {seq: "시퀀스2-1(환경)", idx: 2, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
-        {seq: "시퀀스2-1(환경)", idx: 3, item: "온도싸이클 시험", hours: 158, device: "항온항습 챔버 2호기", condition: "-40C~125C"},
+        {seq: "시퀀스2-1(환경)", idx: 3, item: "온도싸이클 시험", hours: 158, device: "항온항습 챔버 2호기", condition: "-40°C~125°C"},
         {seq: "시퀀스2-1(환경)", idx: 4, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
-        {seq: "시퀀스2-1(환경)", idx: 5, item: "정상 습도 시험", hours: 240, device: "항온항습 챔버 2호기", condition: "65C/90%"},
+        {seq: "시퀀스2-1(환경)", idx: 5, item: "정상 습도 시험", hours: 240, device: "항온항습 챔버 2호기", condition: "65°C/90%"},
         {seq: "시퀀스2-1(환경)", idx: 6, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
-        {seq: "시퀀스2-1(환경)", idx: 7, item: "저온동작 시험", hours: 25, device: "항온항습 챔버 2호기", condition: "-40C 작동"},
+        {seq: "시퀀스2-1(환경)", idx: 7, item: "저온동작 시험", hours: 25, device: "항온항습 챔버 2호기", condition: "-40°C 작동"},
         {seq: "시퀀스2-1(환경)", idx: 8, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
         
-        {seq: "시퀀스2-2(환경)", idx: 1, item: "열충격 시험", hours: 144, device: "열충격 시험기", condition: "-40C~140C"},
+        {seq: "시퀀스2-2(환경)", idx: 1, item: "열충격 시험", hours: 144, device: "열충격 시험기", condition: "-40°C~140°C"},
         {seq: "시퀀스2-2(환경)", idx: 2, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
-        {seq: "시퀀스2-2(환경)", idx: 3, item: "온도싸이클 시험", hours: 158, device: "항온항습 챔버 2호기", condition: "-40C~125C"},
+        {seq: "시퀀스2-2(환경)", idx: 3, item: "온도싸이클 시험", hours: 158, device: "항온항습 챔버 2호기", condition: "-40°C~125°C"},
         {seq: "시퀀스2-2(환경)", idx: 4, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
-        {seq: "시퀀스2-2(환경)", idx: 5, item: "습도 변동 시험", hours: 240, device: "항온항습 챔버 2호기", condition: "-10C~65C, 93%(65C)"},
+        {seq: "시퀀스2-2(환경)", idx: 5, item: "습도 변동 시험", hours: 240, device: "항온항습 챔버 2호기", condition: "-10°C~65°C, 93%(65°C)"},
         {seq: "시퀀스2-2(환경)", idx: 6, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
         {seq: "시퀀스2-2(환경)", idx: 7, item: "고압살수 시험", hours: 25, device: "살수 시험기", condition: "IPX9K"},
         {seq: "시퀀스2-2(환경)", idx: 8, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
         {seq: "시퀀스2-2(환경)", idx: 9, item: "비산방수 시험", hours: 12, device: "외부 기관", condition: "IPX4"},
         {seq: "시퀀스2-2(환경)", idx: 10, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
-        {seq: "시퀀스2-2(환경)", idx: 11, item: "냉수 충격 시험", hours: 11, device: "살수 시험기", condition: "0C 내수"},
+        {seq: "시퀀스2-2(환경)", idx: 11, item: "냉수 충격 시험", hours: 11, device: "살수 시험기", condition: "0°C 내수"},
         {seq: "시퀀스2-2(환경)", idx: 12, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
         
-        {seq: "시퀀스2-3(환경)", idx: 1, item: "열충격 시험", hours: 144, device: "열충격 시험기", condition: "-40C~140C"},
+        {seq: "시퀀스2-3(환경)", idx: 1, item: "열충격 시험", hours: 144, device: "열충격 시험기", condition: "-40°C~140°C"},
         {seq: "시퀀스2-3(환경)", idx: 2, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
-        {seq: "시퀀스2-3(환경)", idx: 3, item: "온도싸이클 시험", hours: 158, device: "항온항습 챔버 2호기", condition: "-40C~125C"},
+        {seq: "시퀀스2-3(환경)", idx: 3, item: "온도싸이클 시험", hours: 158, device: "항온항습 챔버 2호기", condition: "-40°C~125°C"},
         {seq: "시퀀스2-3(환경)", idx: 4, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
-        {seq: "시퀀스2-3(환경)", idx: 5, item: "염수분무 시험", hours: 168, device: "염수분무 시험기", condition: "온도 35C, 염분 5%, pH6.5~7.2"},
+        {seq: "시퀀스2-3(환경)", idx: 5, item: "염수분무 시험", hours: 168, device: "염수분무 시험기", condition: "온도 35°C, 염분 5%, pH6.5~7.2"},
         {seq: "시퀀스2-3(환경)", idx: 6, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
         {seq: "시퀀스2-3(환경)", idx: 7, item: "먼지 시험", hours: 24, device: "외부 기관", condition: "IPX6K"},
         {seq: "시퀀스2-3(환경)", idx: 8, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
         
-        {seq: "개별 시험1", idx: 1, item: "고온고습 시험", hours: 1028, device: "항온항습 챔버 2호기", condition: "85C/85%"},
+        {seq: "개별 시험1", idx: 1, item: "고온고습 시험", hours: 1028, device: "항온항습 챔버 2호기", condition: "85°C/85%"},
         {seq: "개별 시험1", idx: 2, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
-
         {seq: "개별 시험2", idx: 1, item: "낙하 시험", hours: 24, device: "줄자", condition: "콘크리트 바닥"},
         {seq: "개별 시험2", idx: 2, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
-
-        {seq: "개별 시험3", idx: 1, item: "내화학 시험", hours: 720, device: "항온항습 챔버 2호기", condition: "25C~100C"},
+        {seq: "개별 시험3", idx: 1, item: "내화학 시험", hours: 720, device: "항온항습 챔버 2호기", condition: "25°C~100°C"},
         {seq: "개별 시험3", idx: 2, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
-
-        {seq: "개별 시험4", idx: 1, item: "복합작동 내구 시험", hours: 1386, device: "DDC 복합작동 내구시험기", condition: "-40~140"},
+        {seq: "개별 시험4", idx: 1, item: "복합작동 내구 시험", hours: 1386, device: "CVVD 복합작동 내구시험기", condition: "-40°C~140°C"},
         {seq: "개별 시험4", idx: 2, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
-
         {seq: "개별 시험5", idx: 1, item: "사인진동 시험", hours: 300, device: "진동 시험기", condition: "20Hz~2000Hz"},
-        {seq: "개별 시험5", idx: 2, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"}
+        {seq: "개별 시험5", idx: 2, item: "초기 성능", hours: 24, device: "CVVD 성능 평가 시험기", condition: "상온 상습"},
+
+        // [DCT 전용 신규 시험 항목군]
+        {seq: "DCT 시퀀스1(내구)", idx: 1, item: "저온 시험", hours: 72, device: "항온항습 챔버", condition: "-40°C 작동"},
+        {seq: "DCT 시퀀스1(내구)", idx: 2, item: "성능 평가", hours: 24, device: "DCT 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "DCT 시퀀스1(내구)", idx: 3, item: "고온 시험", hours: 136, device: "항온항습 챔버", condition: "125°C 작동"},
+        {seq: "DCT 시퀀스1(내구)", idx: 4, item: "성능 평가", hours: 24, device: "DCT 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "DCT 시퀀스1(내구)", idx: 5, item: "온도변화 시험", hours: 255, device: "항온항습 챔버", condition: "-40°C 작동"},
+        {seq: "DCT 시퀀스1(내구)", idx: 6, item: "성능 평가", hours: 24, device: "DCT 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "DCT 시퀀스1(내구)", idx: 7, item: "진동시험", hours: 114, device: "진동 시험기", condition: "사인 & 랜덤"},
+        {seq: "DCT 시퀀스1(내구)", idx: 8, item: "초기 성능", hours: 24, device: "DCT 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "DCT 시퀀스1(내구)", idx: 9, item: "충격 시험", hours: 24, device: "진동 시험기", condition: "10G,50G,100G 충격"},
+        {seq: "DCT 시퀀스1(내구)", idx: 10, item: "초기 성능", hours: 24, device: "DCT 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "DCT 시퀀스2(환경)", idx: 1, item: "고온고습 시험", hours: 1110, device: "항온항습 챔버", condition: "85°C/85%"},
+        {seq: "DCT 시퀀스2(환경)", idx: 2, item: "성능 평가", hours: 24, device: "DCT 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "DCT 시퀀스3(내구)", idx: 1, item: "내구 시험", hours: 2282, device: "DCT 복합작동내구 시험기", condition: "-40°C~125°C"},
+        {seq: "DCT 시퀀스3(내구)", idx: 2, item: "성능 평가", hours: 24, device: "DCT 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "DCT 시퀀스4(환경)", idx: 1, item: "먼지 시험", hours: 24, device: "외부 기관", condition: "IPX6K"},
+        {seq: "DCT 시퀀스4(환경)", idx: 2, item: "성능 평가", hours: 24, device: "DCT 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "DCT 시퀀스4(환경)", idx: 3, item: "고압살수 시험", hours: 24, device: "살수 시험기", condition: "125°C 작동"},
+        {seq: "DCT 시퀀스4(환경)", idx: 4, item: "성능 평가", hours: 24, device: "DCT 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "DCT 시퀀스4(환경)", idx: 5, item: "온도변화 시험", hours: 255, device: "항온항습 챔버", condition: "-40°C 작동"},
+        {seq: "DCT 시퀀스4(환경)", idx: 6, item: "성능 평가", hours: 24, device: "DCT 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "DCT 시퀀스4(환경)", idx: 7, item: "진동시험", hours: 114, device: "진동 시험기", condition: "사인 & 랜덤"},
+        {seq: "DCT 시퀀스4(환경)", idx: 8, item: "초기 성능", hours: 24, device: "DCT 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "DCT 시퀀스5(환경)", idx: 1, item: "항온항습 시험", hours: 230, device: "항온항습 챔버", condition: "-10°C~65°C, 93%(65°C)"},
+        {seq: "DCT 시퀀스5(환경)", idx: 2, item: "성능 평가", hours: 24, device: "DCT 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "DCT 시퀀스5(환경)", idx: 3, item: "방수 시험", hours: 129, device: "살수 시험기", condition: "IPX9K"},
+        {seq: "DCT 시퀀스5(환경)", idx: 4, item: "성능 평가", hours: 24, device: "DCT 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "DCT 시퀀스6(환경)", idx: 1, item: "열충격 시험", hours: 1125, device: "열충격 시험기", condition: "-40°C~125°C"},
+        {seq: "DCT 시퀀스6(환경)", idx: 2, item: "성능 평가", hours: 24, device: "DCT 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "DCT 시퀀스7(환경)", idx: 1, item: "ESD 시험", hours: 24, device: "외부 기관", condition: "330Ω 150pF"},
+        {seq: "DCT 시퀀스7(환경)", idx: 2, item: "성능 평가", hours: 24, device: "DCT 성능 평가 시험기", condition: "상온 상습"},
+   
+        {seq: "DCT 시퀀스8(환경)", idx: 1, item: "염수분무 시험", hours: 840, device: "염수분무 시험기", condition: "온도 35°C, 염분 5%, pH6.5~7.2"},
+        {seq: "DCT 시퀀스8(환경)", idx: 2, item: "성능 평가", hours: 24, device: "DCT 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "DCT 시퀀스9(내구)", idx: 1, item: "낙하 시험", hours: 24, device: "줄자", condition: "콘크리트 바닥"},
+        {seq: "DCT 시퀀스9(내구)", idx: 2, item: "성능 평가", hours: 24, device: "DCT 성능 평가 시험기", condition: "상온 상습"},
+  
+        {seq: "DCT 시퀀스10(환경)", idx: 1, item: "침수 시험", hours: 72, device: "침수 챔버", condition: "125°C, 0°C물"},
+        {seq: "DCT 시퀀스10(환경)", idx: 2, item: "성능 평가", hours: 24, device: "DCT 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "DCT 시퀀스11(환경)", idx: 1, item: "화학 약품성 시험", hours: 720, device: "항온항습 챔버", condition: "25°C~100°C"},
+        {seq: "DCT 시퀀스11(환경)", idx: 2, item: "성능 평가", hours: 24, device: "DCT 성능 평가 시험기", condition: "상온 상습"},
+
+        // 🚀 [2ATC 전용 신규 시험 항목군]
+        {seq: "2ATC 시퀀스1", idx: 1, item: "고온 작동내구", hours: 1200, device: "2ATC 내구시험기1", condition: "85 ~ 120C 작동"},
+        {seq: "2ATC 시퀀스1", idx: 2, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "2ATC 시퀀스1", idx: 3, item: "온도변화 작동 내구", hours: 280, device: "2ATC 내구시험기1", condition: "-40 ~ 140C 작동"},
+        {seq: "2ATC 시퀀스1", idx: 4, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "2ATC 시퀀스1", idx: 5, item: "기밀 시험", hours: 24, device: "기밀 시험기", condition: "10Cycle"},
+        {seq: "2ATC 시퀀스1", idx: 6, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "2ATC 시퀀스2", idx: 1, item: "전환 내구", hours: 2292, device: "2ATC 내구시험기1", condition: "3,300,000 cycle"},
+        {seq: "2ATC 시퀀스2", idx: 2, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "2ATC 시퀀스2", idx: 3, item: "기밀 시험", hours: 24, device: "기밀 시험기", condition: "10Cycle"},
+        {seq: "2ATC 시퀀스2", idx: 4, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "2ATC 시퀀스3", idx: 1, item: "최대 전류 내구", hours: 556, device: "2ATC 내구시험기1", condition: "200,000cycle"},
+        {seq: "2ATC 시퀀스3", idx: 2, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "2ATC 시퀀스3", idx: 3, item: "최소 속도 유지 부하 내구", hours: 556, device: "2ATC 내구시험기1", condition: "200,000cycle"},
+        {seq: "2ATC 시퀀스3", idx: 4, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "2ATC 시퀀스3", idx: 5, item: "기밀 시험", hours: 24, device: "기밀 시험기", condition: "10Cycle"},
+        {seq: "2ATC 시퀀스3", idx: 6, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "2ATC 시퀀스4", idx: 1, item: "열충격 시험", hours: 1000, device: "열충격 시험기", condition: "-40 ~ 125C 작동"},
+        {seq: "2ATC 시퀀스4", idx: 2, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "2ATC 시퀀스4", idx: 3, item: "사인 & 랜덤진동", hours: 132, device: "진동 시험기", condition: "각 축당 22hr"},
+        {seq: "2ATC 시퀀스4", idx: 4, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "2ATC 시퀀스4", idx: 5, item: "충격 시험", hours: 24, device: "진동 시험기", condition: "10G, 50G, 100G"},
+        {seq: "2ATC 시퀀스4", idx: 6, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "2ATC 시퀀스4", idx: 7, item: "습도 시험", hours: 504, device: "항온항습 챔버 4호기", condition: "40C 93%"},
+        {seq: "2ATC 시퀀스4", idx: 8, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "2ATC 시퀀스4", idx: 9, item: "침수 시험", hours: 72, device: "침수 시험기", condition: "20Cycle"},
+        {seq: "2ATC 시퀀스4", idx: 10, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "2ATC 시퀀스5", idx: 1, item: "열충격 시험", hours: 1000, device: "열충격 시험기", condition: "-40 ~ 125C 작동"},
+        {seq: "2ATC 시퀀스5", idx: 2, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "2ATC 시퀀스5", idx: 3, item: "먼지 시험", hours: 24, device: "외부 기관", condition: "IPX6K"},
+        {seq: "2ATC 시퀀스5", idx: 4, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "2ATC 시퀀스5", idx: 5, item: "냉수 열충격 시험", hours: 60, device: "살수 시험기", condition: "100Cycle"},
+        {seq: "2ATC 시퀀스5", idx: 6, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "2ATC 시퀀스5", idx: 7, item: "살수 시험", hours: 24, device: "살수 시험기", condition: "100bar, 노즐각도35도 수온 80C"},
+        {seq: "2ATC 시퀀스5", idx: 8, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "2ATC 시퀀스6", idx: 1, item: "돌충격 시험", hours: 48, device: "외부 기관", condition: "각도 54도"},
+        {seq: "2ATC 시퀀스6", idx: 2, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "2ATC 시퀀스6", idx: 3, item: "염수분무 시험", hours: 840, device: "염수분무 시험기", condition: "35도 2hr > 50도 4h > 70도 2h 105cycle"},
+        {seq: "2ATC 시퀀스6", idx: 4, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "2ATC 시퀀스6", idx: 5, item: "습도 시험", hours: 504, device: "항온항습 챔버 4호기", condition: "40C 93%"},
+        {seq: "2ATC 시퀀스6", idx: 6, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "2ATC 시퀀스7", idx: 1, item: "CASS 시험", hours: 288, device: "외부 기관", condition: "CASS"},
+        {seq: "2ATC 시퀀스7", idx: 2, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "2ATC 시퀀스8", idx: 1, item: "낙하 시험", hours: 24, device: "줄자", condition: "콘크리트 바닥"},
+        {seq: "2ATC 시퀀스8", idx: 2, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "2ATC 시퀀스9", idx: 1, item: "내화학 시험", hours: 300, device: "항온항습 챔버 3호기", condition: "시험유 10종 125도"},
+        {seq: "2ATC 시퀀스9", idx: 2, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "2ATC 시퀀스10", idx: 1, item: "ESD", hours: 24, device: "외부 기관", condition: "unpowered"},
+        {seq: "2ATC 시퀀스10", idx: 2, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+
+         // 🚀 [ELSD 전용 신규 시험 항목군]
+        {seq: "ELSD 시퀀스1", idx: 1, item: "고온 작동내구", hours: 1200, device: "ELSD 내구시험기", condition: "85 ~ 120C 작동"},
+        {seq: "ELSD 시퀀스1", idx: 2, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "ELSD 시퀀스1", idx: 3, item: "온도변화 작동 내구", hours: 280, device: "ELSD 내구시험기", condition: "-40 ~ 140C 작동"},
+        {seq: "ELSD 시퀀스1", idx: 4, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "ELSD 시퀀스1", idx: 5, item: "기밀 시험", hours: 24, device: "기밀 시험기", condition: "10Cycle"},
+        {seq: "ELSD 시퀀스1", idx: 6, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "ELSD 시퀀스2", idx: 1, item: "DAS 내구", hours: 2292, device: "ELSD 내구시험기", condition: "3,300,000 cycle"},
+        {seq: "ELSD 시퀀스2", idx: 2, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "ELSD 시퀀스2", idx: 3, item: "기밀 시험", hours: 24, device: "기밀 시험기", condition: "10Cycle"},
+        {seq: "ELSD 시퀀스2", idx: 4, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "ELSD 시퀀스3", idx: 1, item: "최대 전류 내구", hours: 556, device: "2ATC 내구시험기1", condition: "200,000cycle"},
+        {seq: "ELSD 시퀀스3", idx: 2, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "ELSD 시퀀스3", idx: 3, item: "최소 속도 유지 부하 내구", hours: 556, device: "2ATC 내구시험기1", condition: "200,000cycle"},
+        {seq: "ELSD 시퀀스3", idx: 4, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "ELSD 시퀀스3", idx: 5, item: "기밀 시험", hours: 24, device: "기밀 시험기", condition: "10Cycle"},
+        {seq: "ELSD 시퀀스3", idx: 6, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "ELSD 시퀀스4", idx: 1, item: "시스템 예압 구동 내구", hours: 2200, device: "외부 기관", condition: "0.8bar"},
+        {seq: "ELSD 시퀀스4", idx: 2, item: "기밀 시험", hours: 24, device: "기밀 시험기", condition: "10Cycle"},
+        {seq: "ELSD 시퀀스4", idx: 3, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "ELSD 시퀀스5", idx: 1, item: "열충격 시험", hours: 1000, device: "열충격 시험기", condition: "-40 ~ 125C 작동"},
+        {seq: "ELSD 시퀀스5", idx: 2, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "ELSD 시퀀스5", idx: 3, item: "사인 & 랜덤진동", hours: 132, device: "진동 시험기", condition: "각 축당 22hr"},
+        {seq: "ELSD 시퀀스5", idx: 4, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "ELSD 시퀀스5", idx: 5, item: "충격 시험", hours: 24, device: "진동 시험기", condition: "10G, 50G, 100G"},
+        {seq: "ELSD 시퀀스5", idx: 6, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "ELSD 시퀀스5", idx: 7, item: "습도 시험", hours: 504, device: "항온항습 챔버 4호기", condition: "40C 93%"},
+        {seq: "ELSD 시퀀스5", idx: 8, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "ELSD 시퀀스5", idx: 9, item: "침수 시험", hours: 72, device: "침수 시험기", condition: "20Cycle"},
+        {seq: "ELSD 시퀀스5", idx: 10, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "ELSD 시퀀스6", idx: 1, item: "열충격 시험", hours: 1000, device: "열충격 시험기", condition: "-40 ~ 125C 작동"},
+        {seq: "ELSD 시퀀스6", idx: 2, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "ELSD 시퀀스6", idx: 3, item: "먼지 시험", hours: 24, device: "외부 기관", condition: "IPX6K"},
+        {seq: "ELSD 시퀀스6", idx: 4, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "ELSD 시퀀스6", idx: 5, item: "냉수 열충격 시험", hours: 60, device: "살수 시험기", condition: "100Cycle"},
+        {seq: "ELSD 시퀀스6", idx: 6, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "ELSD 시퀀스6", idx: 7, item: "살수 시험", hours: 24, device: "살수 시험기", condition: "100bar, 노즐각도35도 수온 80C"},
+        {seq: "ELSD 시퀀스6", idx: 8, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "ELSD 시퀀스7", idx: 1, item: "돌충격 시험", hours: 48, device: "외부 기관", condition: "각도 54도"},
+        {seq: "ELSD 시퀀스7", idx: 2, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "ELSD 시퀀스7", idx: 3, item: "염수분무 시험", hours: 840, device: "염수분무 시험기", condition: "35도 2hr > 50도 4h > 70도 2h 105cycle"},
+        {seq: "ELSD 시퀀스7", idx: 4, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "ELSD 시퀀스7", idx: 5, item: "습도 시험", hours: 504, device: "항온항습 챔버 4호기", condition: "40C 93%"},
+        {seq: "ELSD 시퀀스7", idx: 6, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "ELSD 시퀀스8", idx: 1, item: "CASS 시험", hours: 288, device: "외부 기관", condition: "CASS"},
+        {seq: "ELSD 시퀀스8", idx: 2, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "ELSD 시퀀스9", idx: 1, item: "낙하 시험", hours: 24, device: "줄자", condition: "콘크리트 바닥"},
+        {seq: "ELSD 시퀀스9", idx: 2, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "ELSD 시퀀스10", idx: 1, item: "내화학 시험", hours: 300, device: "항온항습 챔버 3호기", condition: "시험유 10종 125도"},
+        {seq: "ELSD 시퀀스10", idx: 2, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "ELSD 시퀀스11", idx: 1, item: "ESD", hours: 24, device: "외부 기관", condition: "unpowered"},
+        {seq: "ELSD 시퀀스11", idx: 2, item: "초기 성능", hours: 24, device: "ELSD 성능 평가 시험기", condition: "상온 상습"},
+
+         // 🚀 [디스커넥터 전용 신규 시험 항목군]
+        {seq: "디스커넥터 시퀀스1", idx: 1, item: "저온시험", hours: 72, device: "항온항습 챔버 1호기", condition: "-40C 작동"},
+        {seq: "디스커넥터 시퀀스1", idx: 2, item: "초기 성능", hours: 24, device: "디스커넥터 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "디스커넥터 시퀀스1", idx: 3, item: "고온시험", hours: 136, device: "항온항습 챔버 1호기", condition: "125C 작동"},
+        {seq: "디스커넥터 시퀀스1", idx: 4, item: "초기 성능", hours: 24, device: "디스커넥터 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "디스커넥터 시퀀스1", idx: 5, item: "진동시험", hours: 114, device: "진동 시험기", condition: "축당 38h"},
+        {seq: "디스커넥터 시퀀스1", idx: 6, item: "초기 성능", hours: 24, device: "디스커넥터 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "디스커넥터 시퀀스1", idx: 7, item: "충격시험", hours: 24, device: "진동 시험기", condition: "10G 50G 100G"},
+        {seq: "디스커넥터 시퀀스1", idx: 8, item: "초기 성능", hours: 24, device: "디스커넥터 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "디스커넥터 시퀀스2", idx: 1, item: "온도싸이클 시험", hours: 255, device: "항온항습 챔버 1호기", condition: "-40C ~ 140C"},
+        {seq: "디스커넥터 시퀀스2", idx: 2, item: "초기 성능", hours: 24, device: "디스커넥터 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "디스커넥터 시퀀스2", idx: 3, item: "항온항습", hours: 136, device: "항온항습 챔버 3호기", condition: "-10 ~ 65도"},
+        {seq: "디스커넥터 시퀀스2", idx: 4, item: "초기 성능", hours: 24, device: "디스커넥터 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "디스커넥터 시퀀스2", idx: 5, item: "먼지시험", hours: 114, device: "외부 기관", condition: "IP6KX"},
+        {seq: "디스커넥터 시퀀스2", idx: 6, item: "초기 성능", hours: 24, device: "디스커넥터 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "디스커넥터 시퀀스2", idx: 7, item: "고압살수", hours: 24, device: "살수 시험기", condition: "IPX9K"},
+        {seq: "디스커넥터 시퀀스2", idx: 8, item: "초기 성능", hours: 24, device: "디스커넥터 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "디스커넥터 시퀀스3", idx: 1, item: "내구시험(EM)", hours: 1000, device: "2ATC 내구시험기2", condition: "188.6만회"},
+        {seq: "디스커넥터 시퀀스3", idx: 2, item: "내구시험(CEER)", hours: 1040, device: "2ATC 내구시험기2", condition: "200만회"},
+        {seq: "디스커넥터 시퀀스3", idx: 3, item: "내구시험(NEEV)", hours: 660, device: "2ATC 내구시험기2", condition: "126.2만회"},
+        {seq: "디스커넥터 시퀀스3", idx: 4, item: "내구시험(EREV DAS)", hours: 890, device: "2ATC 내구시험기2", condition: "170만회"},
+        {seq: "디스커넥터 시퀀스3", idx: 5, item: "내구시험(EREV DOG)", hours: 960, device: "2ATC 내구시험기2", condition: "184.6만회"},
+        {seq: "디스커넥터 시퀀스3", idx: 6, item: "초기 성능", hours: 24, device: "디스커넥터 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "디스커넥터 시퀀스4", idx: 1, item: "방수시험", hours: 140, device: "살수 시험기", condition: "splash"},
+        {seq: "디스커넥터 시퀀스4", idx: 2, item: "초기 성능", hours: 24, device: "디스커넥터 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "디스커넥터 시퀀스5", idx: 1, item: "CASS 시험", hours: 288, device: "외부 기관", condition: "CASS"},
+        {seq: "디스커넥터 시퀀스5", idx: 2, item: "초기 성능", hours: 24, device: "디스커넥터 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "디스커넥터 시퀀스6", idx: 1, item: "NVH 시험", hours: 24, device: "무향실", condition: "0.5m, 55dB이하"},
+        {seq: "디스커넥터 시퀀스6", idx: 2, item: "초기 성능", hours: 24, device: "디스커넥터 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "디스커넥터 시퀀스6", idx: 3, item: "낙하 시험", hours: 24, device: "줄자", condition: "1m"},
+        {seq: "디스커넥터 시퀀스6", idx: 4, item: "초기 성능", hours: 24, device: "디스커넥터 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "디스커넥터 시퀀스7", idx: 1, item: "열충격 시험", hours: 1138, device: "열충격 시험기", condition: "-40C ~ 125C"},
+        {seq: "디스커넥터 시퀀스7", idx: 2, item: "초기 성능", hours: 24, device: "디스커넥터 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "디스커넥터 시퀀스8", idx: 1, item: "침수 시험", hours: 72, device: "침수 시험기", condition: "10cycle"},
+        {seq: "디스커넥터 시퀀스8", idx: 2, item: "초기 성능", hours: 24, device: "디스커넥터 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "디스커넥터 시퀀스9", idx: 1, item: "고온고습 시험", hours: 1110, device: "항온항습 챔버 3호기", condition: "85도85프로"},
+        {seq: "디스커넥터 시퀀스9", idx: 2, item: "초기 성능", hours: 24, device: "디스커넥터 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "디스커넥터 시퀀스10", idx: 1, item: "ESD 시험", hours: 24, device: "외부 기관", condition: "unpowered"},
+        {seq: "디스커넥터 시퀀스10", idx: 2, item: "초기 성능", hours: 24, device: "디스커넥터 성능 평가 시험기", condition: "상온 상습"},
+
+        {seq: "디스커넥터 시퀀스11", idx: 1, item: "내화학 시험", hours: 300, device: "항온항습 챔버 4호기", condition: "시험유 10종"},
+        {seq: "디스커넥터 시퀀스11", idx: 2, item: "초기 성능", hours: 24, device: "디스커넥터 성능 평가 시험기", condition: "상온 상습"},
+   
+        // [e-Axle 전용 신규 시험 항목군]
+        {seq: "e-Axle 전용 고전압 시험", idx: 1, item: "고전압 절연저항 시험", hours: 48, device: "외부 기관", condition: "DC 500V, 100MΩ 이상"},
+        {seq: "e-Axle 전용 고전압 시험", idx: 2, item: "고온 무통전 방치 시험", hours: 120, device: "항온항습 챔버 3호기", condition: "150°C 방치"},
+        {seq: "e-Axle 전용 고전압 시험", idx: 3, item: "실동작 토크 내구시험", hours: 500, device: "DDC 복합작동 내구시험기", condition: "정격 토크 80% 무한반복"}
     ];
 
     let USER_RELIABILITY_DB = {};
@@ -228,11 +464,36 @@
     let globalCalculatedData = [];
     let uniqueIdCounter = 0;
 
-    window.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('startDateInput').value = new Date().toISOString().substring(0, 10);
+    function initScheduler() {
+        const dateInput = document.getElementById('startDateInput');
+        if (dateInput) {
+            dateInput.value = new Date().toISOString().substring(0, 10);
+        }
+        
+        const modelInput = document.getElementById('modelInput');
+        if (modelInput) {
+            modelInput.addEventListener('change', buildSelectionCheckboxUI);
+            modelInput.addEventListener('input', buildSelectionCheckboxUI);
+        }
+
         buildSelectionCheckboxUI();
-        loadFromLocalStorage(); 
-    });
+        
+        try {
+            loadFromLocalStorage();
+        } catch (e) {
+            console.error("이전 버전 스케줄 데이터 구조 충돌 발생 - 초기화 후 재시도합니다.", e);
+            localStorage.clear();
+            USER_RELIABILITY_DB = {};
+            addedModelsOrder = [];
+            globalCalculatedData = [];
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initScheduler);
+    } else {
+        initScheduler();
+    }
 
     function saveToLocalStorage() {
         localStorage.setItem('v54_addedModelsOrder', JSON.stringify(addedModelsOrder));
@@ -247,7 +508,7 @@
             addedModelsOrder = JSON.parse(savedOrder);
             USER_RELIABILITY_DB = JSON.parse(savedDB);
             updatePriorityUI();
-            recalculateEngine();
+            recalculateEngine(); 
         }
     }
 
@@ -255,6 +516,9 @@
         const container = document.getElementById('masterItemSelectionContainer');
         if(!container) return;
         container.innerHTML = '';
+
+        const modelInput = document.getElementById('modelInput');
+        const currentModel = modelInput ? modelInput.value.trim().toLowerCase() : '';
 
         let orderedCategories = [];
         MASTER_RELIABILITY_ITEMS.forEach(item => {
@@ -264,6 +528,26 @@
         });
 
         orderedCategories.forEach(categoryName => {
+            const categoryLower = categoryName.toLowerCase();
+            
+            let isMatch = false;
+            if (currentModel === 'dct') {
+                if (categoryLower.includes('dct')) isMatch = true;
+            } else if (currentModel === 'e-axle') {
+                if (categoryLower.includes('e-axle')) isMatch = true;
+            } else if (currentModel === 'cvvd' || currentModel === 'neev' || currentModel === '') {
+                // 고도화 패치: 타 모델 전용 키워드가 아예 포함되지 않은 오리지널 CVVD/공용 시퀀스만 필터링
+                if (!categoryLower.includes('dct') && !categoryLower.includes('e-axle') && 
+                    !categoryLower.includes('2atc') && !categoryLower.includes('elsd') && 
+                    !categoryLower.includes('디스커넥터')) {
+                    isMatch = true;
+                }
+            } else {
+                if (categoryLower.includes(currentModel)) isMatch = true;
+            }
+
+            if (!isMatch) return;
+
             let headerDiv = document.createElement('div');
             headerDiv.className = 'group-header';
             headerDiv.innerHTML = `
@@ -288,6 +572,8 @@
                 }
             });
         });
+        
+        syncToggleButtonText();
     }
 
     function triggerCheckboxClick(index) {
@@ -336,6 +622,13 @@
         if(!mainBtn) return;
         
         let allChecked = true;
+        let visibleCount = checkboxes.length;
+        
+        if(visibleCount === 0) {
+            mainBtn.innerText = "☑️ 선택할 항목 없음";
+            return;
+        }
+
         for (let i = 0; i < checkboxes.length; i++) {
             if (!checkboxes[i].checked) {
                 allChecked = false;
@@ -406,8 +699,42 @@
         let tempGlobalData = [];
         let modelSequenceEndTimes = {}; 
 
+        const CHAMBER_POOL = ["항온항습 챔버 1호기", "항온항습 챔버 2호기", "항온항습 챔버 3호기", "항온항습 챔버 4호기"];
+        let dynamicDeviceCalendar = {}; 
+
+        function getChamberScore(dev, start, end, currentCondition) {
+            let d = new Date(start.getTime());
+            let endStr = formatDate(end);
+            let conflictDays = 0;
+            let batchDays = 0;
+            
+            while (formatDate(d) < endStr) {
+                let dStr = formatDate(d);
+                let activeTasks = (dynamicDeviceCalendar[dev] && dynamicDeviceCalendar[dev][dStr]) || [];
+                
+                if (activeTasks.length > 0) {
+                    let hasDifferentCondition = activeTasks.some(t => t.condition.trim() !== currentCondition.trim());
+                    let isBaseCondition = currentCondition === "-" || currentCondition === "상온 상습";
+                    
+                    if (hasDifferentCondition || isBaseCondition) {
+                        conflictDays++; 
+                    } else {
+                        batchDays++; 
+                    }
+                }
+                d.setDate(d.getDate() + 1);
+            }
+            
+            if (conflictDays === 0) {
+                return batchDays > 0 ? 2 : 1; 
+            } else {
+                return -conflictDays; 
+            }
+        }
+
         addedModelsOrder.forEach(projectKey => {
             const config = USER_RELIABILITY_DB[projectKey];
+            if (!config) return;
             const baseStart = new Date(config.startDate + "T00:00:00");
             const sourceList = config.tasks;
 
@@ -421,12 +748,65 @@
                     modelSequenceEndTimes[projectKey][seqKey] = new Date(baseStart.getTime());
                 }
 
-                let currentStart = new Date(modelSequenceEndTimes[projectKey][seqKey].getTime());
+                let currentStart;
+                if (task.customStart) {
+                    currentStart = new Date(task.customStart + "T00:00:00");
+                } else {
+                    currentStart = new Date(modelSequenceEndTimes[projectKey][seqKey].getTime());
+                }
+
+                const isManualTask = task.item.includes("성능") || task.item.includes("평가") || task.item.includes("초기");
+                
+                if (isManualTask) {
+                    while (currentStart.getDay() === 0 || currentStart.getDay() === 6) {
+                        currentStart.setDate(currentStart.getDate() + 1);
+                    }
+                }
+
                 let daysNeeded = Math.ceil(task.hours / 24);
                 let currentEnd = new Date(currentStart.getTime());
-                currentEnd.setDate(currentEnd.getDate() + daysNeeded);
+
+                if (isManualTask) {
+                    let daysCounted = 0;
+                    while (daysCounted < daysNeeded) {
+                        currentEnd.setDate(currentEnd.getDate() + 1);
+                        if (currentEnd.getDay() !== 0 && currentEnd.getDay() !== 6) {
+                            daysCounted++;
+                        }
+                    }
+                } else {
+                    currentEnd.setDate(currentEnd.getDate() + daysNeeded);
+                }
 
                 modelSequenceEndTimes[projectKey][seqKey] = new Date(currentEnd.getTime());
+
+                let targetDevice = task.device;
+                if (CHAMBER_POOL.includes(targetDevice) || targetDevice === "항온항습 챔버") {
+                    let bestChamber = targetDevice;
+                    let bestScore = -9999;
+                    
+                    CHAMBER_POOL.forEach(ch => {
+                        let score = getChamberScore(ch, currentStart, currentEnd, task.condition);
+                        if (score > bestScore || (score === bestScore && ch === targetDevice)) {
+                            bestScore = score;
+                            bestChamber = ch;
+                        }
+                    });
+                    targetDevice = bestChamber; 
+                }
+
+                let d = new Date(currentStart.getTime());
+                let endStr = formatDate(currentEnd);
+                while (formatDate(d) < endStr) {
+                    let dStr = formatDate(d);
+                    if (!dynamicDeviceCalendar[targetDevice]) dynamicDeviceCalendar[targetDevice] = {};
+                    if (!dynamicDeviceCalendar[targetDevice][dStr]) dynamicDeviceCalendar[targetDevice][dStr] = [];
+                    dynamicDeviceCalendar[targetDevice][dStr].push({
+                        condition: task.condition,
+                        projectKey: projectKey
+                    });
+                    d.setDate(d.getDate() + 1);
+                }
 
                 tempGlobalData.push({
                     id: uniqueIdCounter++,
@@ -436,7 +816,7 @@
                     seq: task.seq,
                     idx: task.idx,
                     item: task.item,
-                    device: task.device,
+                    device: targetDevice, 
                     condition: task.condition,
                     hours: task.hours,
                     start: currentStart,
@@ -459,132 +839,91 @@
             r.isBatched = false;
         });
 
-        for (let i = 0; i < globalCalculatedData.length; i++) {
-            let target = globalCalculatedData[i];
-            if (target.condition === "-" || target.condition === "상온 상습") continue;
-
-            let maxCapacity = EQUIPMENT_CAPACITY[target.device] || 1;
-            if (maxCapacity <= 1) continue; 
-
-            let targetStartStr = formatDate(target.start);
-            let targetEndStr = formatDate(target.end);
-
-            for (let j = 0; j < globalCalculatedData.length; j++) {
-                if (i === j) continue;
-                let compare = globalCalculatedData[j];
-
-                if (target.projectKey === compare.projectKey) continue;
-
-                if (target.device === compare.device && target.condition.trim() === compare.condition.trim()) {
-                    let compareStartStr = formatDate(compare.start);
-                    let compareEndStr = formatDate(compare.end);
-
-                    let hasOverlap = targetStartStr < compareEndStr && targetEndStr > compareStartStr;
-                    if (hasOverlap) {
-                        target.isBatched = true;
-                        compare.isBatched = true;
-                    }
-                }
+        let deviceGroups = {};
+        globalCalculatedData.forEach(r => {
+            if (!deviceGroups[r.device]) {
+                deviceGroups[r.device] = [];
             }
-        }
+            deviceGroups[r.device].push(r);
+        });
 
-        for (let i = 0; i < globalCalculatedData.length; i++) {
-            let target = globalCalculatedData[i];
-            let maxCapacity = EQUIPMENT_CAPACITY[target.device] || 1;
+        Object.keys(deviceGroups).forEach(device => {
+            let rows = deviceGroups[device];
+            let maxCapacity = EQUIPMENT_CAPACITY[device] || 1;
             
-            if (maxCapacity >= 900) continue; 
-
-            let targetStartStr = formatDate(target.start);
-            let targetEndStr = formatDate(target.end);
-
-            if (maxCapacity === 1) {
-                for (let j = 0; j < globalCalculatedData.length; j++) {
-                    if (i === j) continue;
-                    let compare = globalCalculatedData[j];
-                    
-                    if (target.projectKey === compare.projectKey) continue;
-                    
-                    if (target.device === compare.device) {
-                        let compareStartStr = formatDate(compare.start);
-                        let compareEndStr = formatDate(compare.end);
-                        
-                        if (targetStartStr < compareEndStr && targetEndStr > compareStartStr) {
-                            target.isConflict = true;
-                        }
-                    }
+            let dayMap = {};
+            
+            rows.forEach(row => {
+                let d = new Date(row.start.getTime());
+                let endStr = formatDate(row.end);
+                while (formatDate(d) < endStr) {
+                    let dStr = formatDate(d);
+                    if (!dayMap[dStr]) dayMap[dStr] = [];
+                    dayMap[dStr].push(row);
+                    d.setDate(d.getDate() + 1);
                 }
-            } else {
-                let simultaneousUseCount = 1;
-                let loggedConditionsInPeriod = [target.condition.trim()];
+            });
 
-                for (let j = 0; j < globalCalculatedData.length; j++) {
-                    if (i === j) continue;
-                    let compare = globalCalculatedData[j];
+            Object.keys(dayMap).forEach(dStr => {
+                let activeRows = dayMap[dStr];
+                if (activeRows.length <= 1) return;
 
-                    if (target.projectKey === compare.projectKey) continue;
+                activeRows.forEach(r1 => {
+                    if (r1.condition === "-" || r1.condition === "상온 상습") return;
+                    if (r1.step === "4M") return; 
 
-                    if (target.device === compare.device) {
-                        let compareStartStr = formatDate(compare.start);
-                        let compareEndStr = formatDate(compare.end);
+                    activeRows.forEach(r2 => {
+                        if (r1.id !== r2.id && r2.step !== "4M" && r1.condition.trim() === r2.condition.trim()) {
+                            r1.isBatched = true;
+                            r2.isBatched = true;
+                        }
+                    });
+                });
 
-                        let hasOverlap = targetStartStr < compareEndStr && targetEndStr > compareStartStr;
-                        if (hasOverlap) {
-                            const compCond = compare.condition.trim();
-                            if (target.condition.trim() === compCond) continue; 
-                            
-                            if (!loggedConditionsInPeriod.includes(compCond)) {
-                                loggedConditionsInPeriod.push(compCond);
-                                simultaneousUseCount++;
+                if (maxCapacity >= 900) return; 
+
+                activeRows.forEach(target => {
+                    let targetIdx = addedModelsOrder.indexOf(target.projectKey);
+                    
+                    let existingOtherProjectRows = activeRows.filter(compare => 
+                        compare.projectKey !== target.projectKey && 
+                        addedModelsOrder.indexOf(compare.projectKey) < targetIdx
+                    );
+
+                    if (existingOtherProjectRows.length > 0) {
+                        if (target.step === "4M") {
+                            target.isConflict = true;
+                        } else {
+                            if (maxCapacity === 1) {
+                                target.isConflict = true;
+                            } else {
+                                let activeConditions = new Set();
+                                
+                                existingOtherProjectRows.forEach(row => {
+                                    if (row.step === "4M") {
+                                        activeConditions.add(row.condition.trim() + "_4M_" + row.id);
+                                    } else {
+                                        activeConditions.add(row.condition.trim());
+                                    }
+                                });
+                                
+                                activeConditions.add(target.condition.trim());
+
+                                if (activeConditions.size > maxCapacity) {
+                                    target.isConflict = true;
+                                }
                             }
                         }
                     }
-                }
-
-                if (simultaneousUseCount > maxCapacity) {
-                    globalCalculatedData.forEach(row => {
-                        if (row.projectKey === target.projectKey) return;
-                        
-                        let rStartStr = formatDate(row.start);
-                        let rEndStr = formatDate(row.end);
-                        if(row.device === target.device && rStartStr < targetEndStr && rEndStr > targetStartStr && row.condition.trim() !== target.condition.trim()) {
-                            row.isConflict = true;
-                        }
-                    });
-                }
-            }
-        }
-        
-        globalCalculatedData.forEach(r => {
-            if (r.isBatched) r.isConflict = false;
-        });
-    }
-
-    // [v5.4.3 신규 핵심 기능]: 충돌 자동 추적 후 선행 장비 종료일 다음날로 릴레이 배치 연산
-    function autoResolveConflict(projectKey) {
-        const conflictedRows = globalCalculatedData.filter(r => r.projectKey === projectKey && r.isConflict);
-        if (conflictedRows.length === 0) {
-            alert("현재 타 프로젝트와 설비 점유 충돌(빨간 경고)이 없는 깨끗한 일정입니다.");
-            return;
-        }
-        
-        let maxDependencyEnd = null;
-        
-        conflictedRows.forEach(cRow => {
-            const blockingRows = globalCalculatedData.filter(r => r.projectKey !== projectKey && r.device === cRow.device);
-            blockingRows.forEach(bRow => {
-                if (!maxDependencyEnd || bRow.end > maxDependencyEnd) {
-                    maxDependencyEnd = bRow.end;
-                }
+                });
             });
         });
         
-        if (maxDependencyEnd) {
-            const nextStartStr = formatDate(maxDependencyEnd);
-            USER_RELIABILITY_DB[projectKey].startDate = nextStartStr;
-            
-            alert(`[최적화 완료] 충돌 설비의 선행 일정을 감지하여 이 프로젝트의 시작일을 ${nextStartStr}로 자동 연기 처리했습니다.`);
-            recalculateEngine();
-        }
+        globalCalculatedData.forEach(r => {
+            if (r.isBatched) {
+                r.isConflict = false; 
+            }
+        });
     }
 
     function changePriority(index, direction) {
@@ -620,6 +959,7 @@
 
         addedModelsOrder.forEach((projectKey, index) => {
             const dbRef = USER_RELIABILITY_DB[projectKey];
+            if (!dbRef) return;
             let li = document.createElement('li');
             li.className = 'priority-item';
             li.innerHTML = `
@@ -649,6 +989,19 @@
         }
     }
 
+    function updateTableDateOverride(id, selectedDate) {
+        if(!selectedDate) return; 
+        const targetRow = globalCalculatedData.find(row => row.id === parseInt(id));
+        if (targetRow) {
+            const dbList = USER_RELIABILITY_DB[targetRow.projectKey].tasks || [];
+            const dbTask = dbList.find(t => t.seq === targetRow.seq && t.idx === targetRow.idx);
+            if (dbTask) {
+                dbTask.customStart = selectedDate; 
+            }
+            recalculateEngine(); 
+        }
+    }
+
     function renderTableOutput() {
         const mainContainer = document.getElementById('dynamicTablesContainer');
         if(!mainContainer) return;
@@ -663,6 +1016,7 @@
 
         addedModelsOrder.forEach(projectKey => {
             const projectData = USER_RELIABILITY_DB[projectKey];
+            if (!projectData) return;
             const projectRows = globalCalculatedData.filter(row => row.projectKey === projectKey);
             
             if(projectRows.length === 0) return;
@@ -674,10 +1028,7 @@
             headerDiv.className = 'result-header';
             headerDiv.innerHTML = `
                 <h3>📋 ${projectData.pureModelName} [${projectData.step}] 단계 시험 스케줄 계획표</h3>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn-download-sub" style="background-color: #d97706;" onclick="autoResolveConflict('${projectKey}')">⚡ 충돌 자동 연기 (회피)</button>
-                    <button class="btn-download-sub" onclick="downloadSingleProjectCSV('${projectKey}')">📥 이 계획표 전용 엑셀 내보내기</button>
-                </div>
+                <button class="btn-download-sub" onclick="downloadSingleProjectCSV('${projectKey}')">📥 이 계획표 전용 엑셀 내보내기</button>
             `;
             cardDiv.appendChild(headerDiv);
 
@@ -688,15 +1039,15 @@
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 130px;">구분/시퀀스</th>
-                            <th style="width: 50px;">순번</th>
+                            <th style="width: 140px;">구분/시퀀스</th>
+                            <th style="width: 60px;">순번</th>
                             <th style="width: 200px;">시험 항목</th>
-                            <th style="width: 180px;">시험 조건</th>
+                            <th style="width: 160px;">시험 조건</th>
                             <th style="width: 220px;">지정/투입 설비명 (변경 가능)</th>
-                            <th style="width: 70px;">소요(h)</th>
-                            <th style="width: 110px;">시작 일자</th>
+                            <th style="width: 80px;">소요(h)</th>
+                            <th style="width: 140px;">시작 일자</th>
                             <th style="width: 110px;">완료 일자</th>
-                            <th style="width: 140px;">할당 상태 체크</th>
+                            <th style="width: 150px;">할당 상태 체크</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -724,9 +1075,16 @@
                 });
                 selectHtml += `</select>`;
 
+                let dateInputHtml = '';
+                if (row.isConflict) {
+                    dateInputHtml = `<input type="date" class="table-date-input" value="${formatDate(row.start)}" onchange="updateTableDateOverride('${row.id}', this.value)">`;
+                } else {
+                    dateInputHtml = `<span class="date-text">${formatDate(row.start)}</span>`;
+                }
+
                 let statusBadgeHtml = '';
                 if (row.isConflict) {
-                    statusBadgeHtml = `<span class="badge-conflict">⚠️ 자원 부족(충돌)</span>`;
+                    statusBadgeHtml = `<span class="badge-conflict">⚠️ 장비 중복(충돌)</span>`;
                 } else if (row.isBatched) {
                     statusBadgeHtml = `<span class="badge-batch">🔗 동일조건 동시투입</span>`;
                 } else {
@@ -736,13 +1094,13 @@
                 }
 
                 tr.innerHTML = `
-                    <td class="text-center"><span class="badge-seq">${row.seq}</span></td>
+                    <td class="text-center" title="${row.seq}"><span class="badge-seq">${row.seq}</span></td>
                     <td class="text-center">${row.idx}</td>
-                    <td class="text-left" style="font-weight: bold;">${row.item}</td>
-                    <td class="text-center"><span class="badge-cond">${row.condition}</span></td>
+                    <td class="text-left" style="font-weight: bold;" title="${row.item}">${row.item}</td>
+                    <td class="text-center"><span class="badge-cond" title="${row.condition}">${row.condition}</span></td>
                     <td class="text-center">${selectHtml}</td>
                     <td class="text-right">${row.hours} h</td>
-                    <td class="text-center date-text">${formatDate(row.start)}</td>
+                    <td class="text-center">${dateInputHtml}</td>
                     <td class="text-center date-text">${formatDate(row.end)}</td>
                     <td class="text-center">${statusBadgeHtml}</td>
                 `;
@@ -757,6 +1115,7 @@
     }
 
     function formatDate(date) {
+        if (!date || isNaN(date.getTime())) return "NaN-NaN-NaN";
         let yyyy = date.getFullYear();
         let mm = String(date.getMonth() + 1).padStart(2, '0');
         let dd = String(date.getDate()).padStart(2, '0');
@@ -765,19 +1124,19 @@
 
     function resetAllScheduler() {
         if(confirm("전체 프로젝트 대기열과 수립된 분리 계획표들을 공백 리셋하시겠습니까?")) {
+            localStorage.clear();
             globalCalculatedData = [];
             addedModelsOrder = [];
             USER_RELIABILITY_DB = {};
             updatePriorityUI();
             recalculateEngine();
-            const checkboxes = document.querySelectorAll('#masterItemSelectionContainer input[type="checkbox"]');
-            checkboxes.forEach(cb => cb.checked = false);
-            syncToggleButtonText();
+            buildSelectionCheckboxUI();
         }
     }
 
     function downloadSingleProjectCSV(projectKey) {
         const projectData = USER_RELIABILITY_DB[projectKey];
+        if (!projectData) return;
         const projectRows = globalCalculatedData.filter(row => row.projectKey === projectKey);
         
         if (projectRows.length === 0) return;
@@ -787,15 +1146,16 @@
         csvContent += "구분/시퀀스,순번,시험 항목,시험 조건,지정/투입 설비명,소요(h),시작 일자,완료 일자,할당 상태\n";
         
         projectRows.forEach(row => {
-            let statusText = row.isConflict ? "자원 부족(충돌)" : (row.isBatched ? "동일조건 동시투입" : "정상할당");
+            let statusText = row.isConflict ? "장비 중복(충돌)" : (row.isBatched ? "동일조건 동시투입" : "정상할당");
             csvContent += `"${row.seq}","${row.idx}","${row.item}","${row.condition}","${row.device}","${row.hours}","${formatDate(row.start)}","${formatDate(row.end)}","${statusText}"\n`;
         });
 
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
+        const sanitizedProjectName = projectData.pureModelName.replace(/[^a-zA-Z0-9가-힣]/g, '_');
         link.setAttribute("href", url);
-        link.setAttribute("download", `Reliability_Plan_${projectData.pureModelName}_${projectData.step}.csv`);
+        link.setAttribute("download", `Reliability_Plan_${sanitizedProjectName}_${projectData.step}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
