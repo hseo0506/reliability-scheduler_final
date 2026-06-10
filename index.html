@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>신뢰성 시험 계획 및 자원 지정 최적화 시스템 v5.5.6 (데이터 완벽 복구본)</title>
+    <title>신뢰성 시험 계획 및 자원 지정 최적화 시스템 v5.5.6</title>
     <style>
         * { box-sizing: border-box; font-family: 'Malgun Gothic', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f0f4f8; margin: 0; padding: 15px; color: #333; }
@@ -62,9 +62,11 @@
         .project-table-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); width: 100%; }
         .project-table-card:last-child { margin-bottom: 0; }
         
-        .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #0f766e; }
+        .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; padding-bottom: 8px; border-bottom: 2px solid #0f766e; }
         .result-header h3 { margin: 0; color: #0f766e; font-size: 16px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
         
+        .project-summary-line { margin-bottom: 12px; font-size: 12px; color: #475569; display: flex; gap: 10px; }
+
         .btn-download-sub { padding: 6px 12px; background-color: #2e7d32; color: white; border: none; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; gap: 4px; }
         .btn-download-sub:hover { background-color: #1b5e20; }
         
@@ -74,9 +76,9 @@
         th { background-color: #f1f5f9; color: #334155; font-weight: bold; text-align: center; border-bottom: 2px solid #cbd5e1; }
         
         tr:hover { background-color: #f8fafc; }
-        .highlight-master { background-color: #fff9db; }
-        .highlight-conflict { background-color: #ffebe6 !important; } 
-        .highlight-same-condition { background-color: #e0f2fe !important; } 
+        .highlight-master { background-color: #fffdeb; }
+        .highlight-conflict { background-color: #fff0f0 !important; } 
+        .highlight-same-condition { background-color: #f0f9ff !important; } 
         
         .table-select, .table-date-input { padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; background-color: #fff; width: 100%; outline: none; }
         .table-date-input { font-family: monospace; color: #ef4444; font-weight: bold; height: 26px; border: 1px solid #fca5a5; background-color: #fff5f5; }
@@ -92,6 +94,7 @@
         .badge-ch { display: inline-block; padding: 3px 6px; background-color: #e2f0d9; color: #2e7d32; border-radius: 4px; font-weight: bold; font-size: 11px; }
         .badge-conflict { display: inline-block; padding: 3px 6px; background-color: #ef4444; color: white; border-radius: 4px; font-weight: bold; font-size: 11px; }
         .badge-batch { display: inline-block; padding: 3px 6px; background-color: #0284c7; color: white; border-radius: 4px; font-weight: bold; font-size: 11px; }
+        .badge-summary { display: inline-block; padding: 3px 6px; background-color: #64748b; color: white; border-radius: 4px; font-weight: bold; font-size: 11px; }
         .date-text { color: #0f172a; font-family: monospace; }
         .global-actions { display: flex; justify-content: flex-end; margin-bottom: 15px; }
         .btn-reset { padding: 8px 14px; background-color: #64748b; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; }
@@ -107,7 +110,7 @@
     </div>
     
     <div class="guide-box">
-        <strong>💡 v5.5.6 데이터 무결성 검증 완결 패치 안내:</strong><br>
+        <strong>💡 v5.5.6 데이터 무결성 검증 완결 패치 완료:</strong><br>
         • <strong>디스커넥터 시퀀스 완전 복구:</strong> 이전 누락되었던 중간 단계 성능 평가 항목들을 원본 사양에 맞춰 모두 완벽 복구했습니다.<br>
         • <strong>설비 맵핑 최적화:</strong> 복구된 수동 평가 공정들이 지정된 전용 성능 시험 장비 자원 풀로 정교하게 연동됩니다.
     </div>
@@ -312,7 +315,7 @@
         {seq: "2ATC 시퀀스5", idx: 1, item: "열충격 시험", hours: 1000, device: "열충격 시험기", condition: "-40 ~ 125C 작동"},
         {seq: "2ATC 시퀀스5", idx: 2, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
         {seq: "2ATC 시퀀스5", idx: 3, item: "먼지 시험", hours: 24, device: "외부 기관", condition: "IPX6K"},
-        {seq: "2ATC 시퀀스5", idx: 4, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
+        {seq: "2ATC 시퀀+스5", idx: 4, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
         {seq: "2ATC 시퀀스5", idx: 5, item: "냉수 열충격 시험", hours: 60, device: "살수 시험기", condition: "100Cycle"},
         {seq: "2ATC 시퀀스5", idx: 6, item: "초기 성능", hours: 24, device: "2ATC 성능 평가 시험기", condition: "상온 상습"},
         {seq: "2ATC 시퀀스5", idx: 7, item: "살수 시험", hours: 24, device: "살수 시험기", condition: "100bar, 노즐각도35도 수온 80C"},
@@ -466,14 +469,13 @@
 
     function initScheduler() {
         const dateInput = document.getElementById('startDateInput');
-        if (dateInput) {
+        if (dateInput && !dateInput.value) {
             dateInput.value = new Date().toISOString().substring(0, 10);
         }
         
         const modelInput = document.getElementById('modelInput');
         if (modelInput) {
             modelInput.addEventListener('change', buildSelectionCheckboxUI);
-            modelInput.addEventListener('input', buildSelectionCheckboxUI);
         }
 
         buildSelectionCheckboxUI();
@@ -496,13 +498,13 @@
     }
 
     function saveToLocalStorage() {
-        localStorage.setItem('v54_addedModelsOrder', JSON.stringify(addedModelsOrder));
-        localStorage.setItem('v54_USER_RELIABILITY_DB', JSON.stringify(USER_RELIABILITY_DB));
+        localStorage.setItem('v556_addedModelsOrder', JSON.stringify(addedModelsOrder));
+        localStorage.setItem('v556_USER_RELIABILITY_DB', JSON.stringify(USER_RELIABILITY_DB));
     }
 
     function loadFromLocalStorage() {
-        const savedOrder = localStorage.getItem('v54_addedModelsOrder');
-        const savedDB = localStorage.getItem('v54_USER_RELIABILITY_DB');
+        const savedOrder = localStorage.getItem('v556_addedModelsOrder');
+        const savedDB = localStorage.getItem('v556_USER_RELIABILITY_DB');
         
         if (savedOrder && savedDB) {
             addedModelsOrder = JSON.parse(savedOrder);
@@ -535,7 +537,7 @@
                 if (categoryLower.includes('dct')) isMatch = true;
             } else if (currentModel === 'e-axle') {
                 if (categoryLower.includes('e-axle')) isMatch = true;
-            } else if (currentModel === 'cvvd' || currentModel === 'neev' || currentModel === '') {
+            } else if (currentModel === 'cvvd' || currentModel === '') {
                 if (!categoryLower.includes('dct') && !categoryLower.includes('e-axle') && 
                     !categoryLower.includes('2atc') && !categoryLower.includes('elsd') && 
                     !categoryLower.includes('디스커넥터')) {
@@ -1020,6 +1022,11 @@
             
             if(projectRows.length === 0) return;
 
+            // 요약 메타데이터 계산
+            let totalHours = projectRows.reduce((sum, r) => sum + r.hours, 0);
+            let endDates = projectRows.map(r => r.end.getTime());
+            let maxEndTime = new Date(Math.max(...endDates));
+
             const cardDiv = document.createElement('div');
             cardDiv.className = 'project-table-card';
             
@@ -1030,6 +1037,15 @@
                 <button class="btn-download-sub" onclick="downloadSingleProjectCSV('${projectKey}')">📥 이 계획표 전용 엑셀 내보내기</button>
             `;
             cardDiv.appendChild(headerDiv);
+
+            const summaryDiv = document.createElement('div');
+            summaryDiv.className = 'project-summary-line';
+            summaryDiv.innerHTML = `
+                <span class="badge-summary">📊 총 시험 항목: ${projectRows.length}건</span>
+                <span class="badge-summary">⏱️ 누적 소요 시간: ${totalHours} h</span>
+                <span class="badge-summary" style="background-color: #0f766e;">📅 최종 완료 예정일: ${formatDate(maxEndTime)}</span>
+            `;
+            cardDiv.appendChild(summaryDiv);
 
             const tableRespDiv = document.createElement('div');
             tableRespDiv.className = 'table-responsive';
@@ -1056,54 +1072,77 @@
             
             const tbody = tableRespDiv.querySelector('tbody');
             
+            // 🚀 [고도화 반영]: 데이터 시퀀스(seq)별 그룹화 맵핑 진행
+            const seqGroups = {};
             projectRows.forEach(row => {
-                const tr = document.createElement('tr');
+                if (!seqGroups[row.seq]) {
+                    seqGroups[row.seq] = [];
+                }
+                seqGroups[row.seq].push(row);
+            });
+
+            // 그룹화된 시퀀스 루프 탐색 및 테이블 바인딩
+            Object.keys(seqGroups).forEach(seqName => {
                 
-                if (row.isConflict) {
-                    tr.className = "highlight-conflict";
-                } else if (row.isBatched) {
-                    tr.className = "highlight-same-condition";
-                } else if (row.device.includes("호기")) {
-                    tr.className = "highlight-master";
-                }
-
-                let selectHtml = `<select class="table-select" onchange="updateTableDeviceOverride('${row.id}', this.value)">`;
-                deviceOptions.forEach(dev => {
-                    const selected = (dev === row.device) ? 'selected' : '';
-                    selectHtml += `<option value="${dev}" ${selected}>${dev}</option>`;
-                });
-                selectHtml += `</select>`;
-
-                let dateInputHtml = '';
-                if (row.isConflict) {
-                    dateInputHtml = `<input type="date" class="table-date-input" value="${formatDate(row.start)}" onchange="updateTableDateOverride('${row.id}', this.value)">`;
-                } else {
-                    dateInputHtml = `<span class="date-text">${formatDate(row.start)}</span>`;
-                }
-
-                let statusBadgeHtml = '';
-                if (row.isConflict) {
-                    statusBadgeHtml = `<span class="badge-conflict">⚠️ 장비 중복(충돌)</span>`;
-                } else if (row.isBatched) {
-                    statusBadgeHtml = `<span class="badge-batch">🔗 동일조건 동시투입</span>`;
-                } else {
-                    let capacityLimit = EQUIPMENT_CAPACITY[row.device] || 1;
-                    let statusText = capacityLimit > 50 ? "제한없음" : "정상할당 (1/" + capacityLimit + ")";
-                    statusBadgeHtml = `<span class="badge-ch">${statusText}</span>`;
-                }
-
-                tr.innerHTML = `
-                    <td class="text-center" title="${row.seq}"><span class="badge-seq">${row.seq}</span></td>
-                    <td class="text-center">${row.idx}</td>
-                    <td class="text-left" style="font-weight: bold;" title="${row.item}">${row.item}</td>
-                    <td class="text-center"><span class="badge-cond" title="${row.condition}">${row.condition}</span></td>
-                    <td class="text-center">${selectHtml}</td>
-                    <td class="text-right">${row.hours} h</td>
-                    <td class="text-center">${dateInputHtml}</td>
-                    <td class="text-center date-text">${formatDate(row.end)}</td>
-                    <td class="text-center">${statusBadgeHtml}</td>
+                // 시퀀스 분리 구분을 돕는 중간 헤더 행(Tr) 동적 추가
+                const sectionHeaderTr = document.createElement('tr');
+                sectionHeaderTr.innerHTML = `
+                    <td colspan="9" style="background-color: #f1f5f9; font-weight: bold; color: #0f766e; text-align: left; padding: 10px 12px; border-bottom: 2px solid #cbd5e1;">
+                        📁 ${seqName} 항목군
+                    </td>
                 `;
-                tbody.appendChild(tr);
+                tbody.appendChild(sectionHeaderTr);
+
+                // 해당 시퀀스 내부 데이터 렌더링
+                seqGroups[seqName].forEach(row => {
+                    const tr = document.createElement('tr');
+                    
+                    if (row.isConflict) {
+                        tr.className = "highlight-conflict";
+                    } else if (row.isBatched) {
+                        tr.className = "highlight-same-condition";
+                    } else if (row.device.includes("호기")) {
+                        tr.className = "highlight-master";
+                    }
+
+                    let selectHtml = `<select class="table-select" onchange="updateTableDeviceOverride('${row.id}', this.value)">`;
+                    deviceOptions.forEach(dev => {
+                        const selected = (dev === row.device) ? 'selected' : '';
+                        selectHtml += `<option value="${dev}" ${selected}>${dev}</option>`;
+                    });
+                    selectHtml += `</select>`;
+
+                    let dateInputHtml = '';
+                    if (row.isConflict) {
+                        dateInputHtml = `<input type="date" class="table-date-input" value="${formatDate(row.start)}" onchange="updateTableDateOverride('${row.id}', this.value)">`;
+                    } else {
+                        dateInputHtml = `<span class="date-text">${formatDate(row.start)}</span>`;
+                    }
+
+                    let statusBadgeHtml = '';
+                    if (row.isConflict) {
+                        statusBadgeHtml = `<span class="badge-conflict">⚠️ 장비 중복(충돌)</span>`;
+                    } else if (row.isBatched) {
+                        statusBadgeHtml = `<span class="badge-batch">🔗 동일조건 동시투입</span>`;
+                    } else {
+                        let capacityLimit = EQUIPMENT_CAPACITY[row.device] || 1;
+                        let statusText = capacityLimit > 50 ? "제한없음" : "정상할당 (1/" + capacityLimit + ")";
+                        statusBadgeHtml = `<span class="badge-ch">${statusText}</span>`;
+                    }
+
+                    tr.innerHTML = `
+                        <td class="text-center" title="${row.seq}"><span class="badge-seq">${row.seq}</span></td>
+                        <td class="text-center">${row.idx}</td>
+                        <td class="text-left" style="font-weight: bold;" title="${row.item}">${row.item}</td>
+                        <td class="text-center"><span class="badge-cond" title="${row.condition}">${row.condition}</span></td>
+                        <td class="text-center">${selectHtml}</td>
+                        <td class="text-right">${row.hours} h</td>
+                        <td class="text-center">${dateInputHtml}</td>
+                        <td class="text-center date-text">${formatDate(row.end)}</td>
+                        <td class="text-center">${statusBadgeHtml}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
             });
 
             cardDiv.appendChild(tableRespDiv);
